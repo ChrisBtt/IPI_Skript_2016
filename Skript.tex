@@ -12,6 +12,9 @@
 \usepackage{listings}
 \usepackage{color}
 
+\newcommand{\kreis}[1]{\unitlength1ex\begin{picture}(2.5,2.5)%
+	\put(0.75,0.75){\circle{2.5}}\put(0.75,0.75){\makebox(0,0){#1}}\end{picture}}
+
 \begin{document}
 	
 	\section{Rechenoperationen}
@@ -250,12 +253,146 @@
 	\end{lstlisting}
 	$3.0 * 4 \quad \Rightarrow \quad$ automatische Umwandlung in höheren Typ, hier: \grqq double\grqq $\Rightarrow$ wird als $3.0 * 4.0$ ausgeführt \\
 	
+	\paragraph{Interger-Division in $C++$}
+	
 	Konsequenzen:
 	\begin{enumerate}
 		\item Division unterscheidet sich nach dem Datentypen: $(-12)/5 \Rightarrow -2 \neq -2.4 \Leftarrow (-12.0/5.0)$
-		\item negative Ereignisse werden aufgerund, positive abgerundet
+		\item negative Ereignisse werden aufgerund, positive abgerundet (truncating division) \\
+				d.h. Nachkommstellen abschneiden, d.h. Richtung Null runden
 		\item Gegensatz (z.B. zu Python): floor division $\widehat{=}$ wird immer abgerundet
+		\item Divisionsrest: 
+			\end{enumerate}
+		\begin{lstlisting} [tabsize = 2]
+			int a = ...;
+			int b = ...;
+			int q = a/b;
+			(a/b)*b = q * b
+		\end{lstlisting}
+		ist im allgemeinen \underline{ungleich} $a$ $\Rightarrow$ 
+		\begin{lstlisting} [tabsize = 2]
+			int rest = a = q*b;
+		\end{lstlisting}
+		\begin{enumerate}
+		\item wenn Division aufgeht $\Rightarrow$ rest = 0 , sonst $\neq 0$
+		\item Invariante: 
+		\begin{lstlisting} [tabsize = 2]
+			(a/b) * b + rest = a
+			
+			int rest1 = a % b;  // aequivalent: a-(b/a)*b
+		\end{lstlisting}
 	\end{enumerate}
+	
+	\paragraph{Anwendung}
+	
+	Wochentag für beliebiges Datum bestimmen:
+	gegeben: $d,m,y$ , gesucht: $w \in \{0,\dots , b\}$ \\
+		int weekday(int d, int w, int y) {}  ; weekday(10,11,2016) $\Rightarrow$ 3 (Donnerstag)
+		
+		Teilprobleme
+		\begin{enumerate}
+				\item finde den Wochentag vom 1. Januar y
+				\item finde den Abstand vom (d,m,y) zum (1,1,y)
+				\item setze beides zusammen \\
+
+		\end{enumerate}
+		
+	Schaltjahresregel: y ist Schaltjahr, wenn:
+	\begin{enumerate}
+		\item y durch 4 teilbar, aber nicht durch 100 $\Rightarrow$ 2004, 2006, nicht 2100
+		\item y durch 400 teilbar $\Rightarrow$ 2000 \\ \\
+		 $\Rightarrow$ 400-Jahres-Zyklus der Regeln: nach 400 Jahren beginnt die Schaltjahresregel von vorn
+ 	\end{enumerate}
+ 	
+ 	\begin{itemize}
+ 		\item Beobachtung: der 1.1.2001 ist der erste Tag eines neuen Zyklus und war Montag
+ 		\item die Anzahl der Tage vom 1.1.y zum 1.1.2001 ist: \\
+ 		$z = y - 2001 \quad \triangle = 365 * z + z/4 - z/100 + z/400$
+ 		\item floor division ist wichtig, wenn $z<0$, z.B. $y = 2000\, , z=-1$
+ 	\end{itemize}
+ 	
+ 	zu \kreis{2}: d.m. ist der x-te Tag im Jahr mit: \\
+	 	\begin{itemize}
+			\item kein Schaltjahr
+				\begin{enumerate}
+					\item $m=1 \Rightarrow d$
+					\item $m=2 \Rightarrow d+31$
+					\item $m=3 \Rightarrow d+59$
+					\item $m=4 \Rightarrow d+90$
+					\item $m=5 \Rightarrow d+120$
+					\item $m>2 \Rightarrow d+59+(153*m-457)/5$
+				\end{enumerate}
+			\item Schaltjahr
+			\begin{enumerate}
+				\item $m=1 \Rightarrow d$
+				\item $m=2 \Rightarrow d+31$
+				\item $m=3 \Rightarrow d+60$
+				\item $m=4 \Rightarrow d+91$
+				\item $m=5 \Rightarrow d+121$
+				\item $m>2 \Rightarrow d+60+(153*m-457)/5$
+			\end{enumerate}
+		
+		zu \kreis{3}: Wochentag von d, m, y:
+		\begin{lstlisting} [tabsize = 2]
+			w = (w_11y + x - 1) mod 7
+		\end{lstlisting}
+	 	\end{itemize}
+	 	
+	 	\paragraph{Bedingungen}
+	 	\begin{itemize}
+	 		\item Bei den meisten Algorithmen ist die Reihenfolge der Schritte \underline{nicht} fix, sondern hängt von den Eingabedaten ab
+	 		\item Beispiel: Auswahl der Offset $d \rightarrow x$ hängt von m ab \\
+	 		dafür die Funktion:
+	 		\begin{lstlisting}
+	 			cond ( bedingung , resultat_wenn_wahr , resultat_wenn_falsch )
+	 		\end{lstlisting}
+	 		\item kanonische Beispiele: Absolutbetrag, Vorzeichenfunktion
+	 	\end{itemize}
+	 	
+	 	Bedingungen programmieren:
+	 	\begin{itemize}
+	 		\item relationale Operatoren: Vergleich von zwei Argumenten \\ $< , > , <= , >= , !=$
+	 		\item logische Operatoren: Verknüpfen von mehreren Bedingungen \\
+		 		$ \&\& (und), || (oder), != (nicht)$
+		 	\item in $C++$ gibt es \underline{keine} Prefix-Variante für die \textit{cond()}-Funktion, aber eine Infix-Variante:
+		 	\begin{lstlisting} [tabsize = 2]
+				(bedingung) ? erg_wenn_wahr : erg_wenn_falsch
+				
+				int abs (int x) {
+					return (x >= 0) ? x : -x;
+				}
+				double abs (double x) {
+					return (x >= 0.0) ? x : -x;
+				}
+				int sign (int x) {
+					return (x == 0) ? 0 : ((x > 0) ? 1 : -1);
+				}
+		 	\end{lstlisting}
+	 	\end{itemize}
+	 	
+	 	\paragraph{Rekursion}
+	 	
+	 	bedeutet: eine Funktion ruft sich selbst auf (evtl. indirekt)
+	 	\begin{itemize}
+	 		\item kanonisches Beispiel: Fakultätsfunktion $k! = 1 \cdot 2 \cdot \dots (k-1) \cdot k$
+	 		\item in $C++$ (rekursive Definition)
+	 		\begin{lstlisting}
+	 			int fakultaet (int k) {
+		 			return (k == 0) ? 1 : k * fakultaet(k-1) ;
+	 			}
+	 		\end{lstlisting}
+	 		\item wichtige Eigenschaften:
+	 		\begin{itemize}
+	 			\item jede rekursive Funktion muss mindestens einen nicht-rekursiven Zweig enthalten, der nach endlich vielen rekursiven Aufrufen erreicht wird \grqq Rekursionsabschluss\grqq - sonst: Endlosrekursion (Absturz)
+				\item bei jedem Aufruf werden dem Namen der Dateenelemente (Argumente \& Zwischenergebnisse) \underline{neue} Speicherzellen zugeordnet \\
+				\textit{fakultaet(3)} $\rightarrow \textit{fakultaet(2)} \rightarrow \textit{fakultaet(1)} \rightarrow \textit{fakultaet(0)} \quad \Rightarrow $ \\
+				$\textit{return 3*fakultaet(2)} \leftarrow \textit{return 2*fakultaet(1)} \leftarrow \textit{return 1*fakultaet(0)} \leftarrow \textit{return 1}$
+				
+	 		\end{itemize}
+	 	\end{itemize}
+ 	
+ 	
+	
 	
 	
 	
