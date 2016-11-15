@@ -376,7 +376,7 @@
 	 	\begin{itemize}
 	 		\item kanonisches Beispiel: Fakultätsfunktion $k! = 1 \cdot 2 \cdot \dots (k-1) \cdot k$
 	 		\item in $C++$ (rekursive Definition)
-	 		\begin{lstlisting}
+	 		\begin{lstlisting} [tabsize = 2]
 	 			int fakultaet (int k) {
 		 			return (k == 0) ? 1 : k * fakultaet(k-1) ;
 	 			}
@@ -390,10 +390,175 @@
 				
 	 		\end{itemize}
 	 	\end{itemize}
+	 	
+	 	\paragraph{Von der funktionalen zur prozeduralen Programmierung}
+	 	\begin{itemize}
+	 		\item Eigenschaften der FP:
+	 		\begin{itemize}
+	 			\item alle Berechnungen durch Funktionsaufrufe, Ergebnis ist Rückgabe
+	 			\item Ergebnis hängt nur von den Werten der Funktions-Argumente ab, nicht von externen Faktoren (\textit{referentielle Integrität})
+	 			\item Speicherzellen für Zwischenergebnisse/Argumente können nach der Initialisierung nicht geändert werden (\textit{write once})
+	 			\item Möglichkeit der rekursiven Funktionsaufrufe (jeder Aufruf bekommt eigene Speicherzellen)
+	 		\end{itemize}
+	 		\item Vorteile:
+	 		\begin{itemize}
+	 			\item natürliche Ausdrucksweise für arithmetische und algebraische Funktionalität (\textit{Taschenrechner})
+	 			\item einfache Auswertung durch Substitutionsmodell - Auswertungsreihenfolge nach Post-Order
+	 			\item mathematisch gut formalisierbar $\Rightarrow$ Korrektheitsbeweise (besonders bei Parallelverarbeitung)
+	 			\item Rekursion ist mächtig und natürlich für bestimmte Probleme (z.B. Fakultät)
+	 		\end{itemize}
+	 		\item Nachteile:
+	 		\begin{itemize}
+	 			\item viele Probleme lassen sich anders natürlicher ausdrücken (z.B. Rekursion vs. Iteration)
+	 			\item setzt unendlich viel Speicher vorraus ($\Rightarrow$ Memory management notwendig $\Rightarrow$ später)
+	 			\item Entitäten, die sich zeitlich verändern schwer modellierbar, teilweise unnatürlich
+	 		\end{itemize}
+	 		\item Korrolar: Man kann keine externen Resourcen (z.B. die Console/Drucker, Bildschirm) ansprechen (weil zeitlich veränderlich) \\ "'keine Seiteneffekte"'
+	 		\item Lösung: Einführung einer Multi-Paradigmensprachen, z.B. Kombination von funktionaler mit \underline{prozeduraler} Programmierung
+	 	\end{itemize}
+	 	
+	 	
+	 	\section{Prozeduale Programmierung}
  	
- 	
+ 	\begin{itemize}
+ 		\item Kennzeichen:
+ 		\begin{itemize}
+ 			\item Prozeduren - Funktionen, die nichts zurückgeben, haben nur Seiteneffekte \\ \underline{Bsp:} auf Konsole ausgeben
+ 			\begin{lstlisting} [tabsize = 2]
+ 				std::cout << "Hello World \n";  // Infix
+ 				operator << (std::cout, "Hello \nLeftarrow"); // Praefix notation
+ 			\end{lstlisting}
+ 			\item Prozeduren in $C++$:
+ 			\begin{enumerate}
+ 				\item Funktion, die \textit{void} zurückgibt (Pseudotyp nur "'nichts"')
+ 				\item Returnwert ignorieren
+ 			\end{enumerate}
+ 			\item Anweisen zur Steuerung des Programmablaufs (z.B. \textit{if / else})
+ 			\begin{lstlisting} [tabsize = 2]
+	 			// funktional:
+	 			int abs (int x) {
+		 			return (x>=0) ? x : -x ;
+	 			}
+	 			
+	 			// prozedural
+	 			int abs (int x) {
+		 			if (x >= 0) {
+			 			return x;
+		 			} else {
+			 			return -x;
+		 			}
+	 			}
+ 			\end{lstlisting}
+ 		\end{itemize}
+ 		\item Zuweisung:
+ 		\begin{itemize}
+ 			\item Speicherzellen können nachträglich verändert werden "'\textit{read-work}"'
+ 			\begin{lstlisting} [tabsize = 2]
+	 			// prozedural
+ 				int foo (int x) {
+	 				int y =2;
+	 				int z1 = x * y;  // z1 = 6
+	 				y = 5;
+	 				int z2 = x * y;  // z2 = 15
+	 				return z1 + z2;
+ 				}
+ 				// write once
+ 				typ const name = wert
+ 				
+ 				// funktional 
+ 				int foo (int x) {
+	 				int y = 2;
+	 				int z1 = x * y;  // z1 = 6
+	 				int y2 = 5;
+	 				int z2 = x * y2;  // z2 = 15
+	 				return z1 + z2;
+ 				}
+
+ 			\end{lstlisting}
+ 		\end{itemize}
+ 		\item $\Rightarrow$ Folgen:
+ 		\begin{itemize}
+ 			\item mächtiger, aber ermöglicht völlig neue Bugs $\Rightarrow$ Erhöhte Aufmerksamkeit beim Programmieren
+ 			\item die Reihenfolge der Ausführung ist viel kritischer als beim Substitutionsmodell
+ 			\item der Programmierer muss immer ein mentales Bild des aktuellen Systemzustands haben
+ 		\end{itemize}
+ 	\end{itemize}
 	
+	\paragraph{Schleifen}
+	 der gleiche Code soll oft wiederholt werden \\ \\
+	 
+	 \begin{lstlisting} [tabsize = 2]
+	 	while (bedingung) {
+		 	... // code wird ausgefuehrt, solange bedingung "true" ist
+	 	}
+	 \end{lstlisting}
+	 \underline{Bsp:} Zahlen von 0-2 ausgeben)
+	 \begin{lstlisting} [tabsize = 2]
+		 int counter = 0;
+		 while (counter < 3) {
+			 std::cout << counter << "\n";
+			 counter = counter +1;
+		 }
+	 \end{lstlisting}
+	 
+	 \begin{tabular} {c|c|c}
+	 	counter & Bedingung & Ausgabe \\
+	 	\hline
+	 	0 & true & 0 \\
+	 	1 & true & 1 \\
+	 	2 & true & 2 \\
+	 	3 & false & $\varnothing$
+	 \end{tabular}
+	 
+	\begin{itemize}
+		\item $C++$ beginnt mit der Zählung meist bei $0$ "'\textit{zero-based}"'
+		\item vergisst man Inkrementierung counter = counter +1 $\Rightarrow$ Bedingung immer true $\Rightarrow$ Endlosschleife $\Rightarrow$ Bug
+		\item drei äquivalente Schreibweisen für Implementierung:
+		\begin{lstlisting} [tabsize = 2]
+			counter = counter + 1;  // assignment
+			counter += 1;  // add-assignment
+			++ counter;  // pre-increment
+		\end{lstlisting}
+	\end{itemize}
 	
+	\paragraph{Anwendung: Wurzelberechnung}
 	
+	Ziel: \text{double sqrt (double y)}
+	Methode: \underline{iterative Verbesserung} mittels Newtonverfahren
+	\begin{lstlisting} [tabsize = 2]
+		initial guess  x(0) bei t=0 geraten
+		while not_good_enough(x(t)) {
+			update x(t+1) from x(t)
+			t = t+1
+		}
+	\end{lstlisting}
+	Newtonverfahren: finde Nullstelle einer gegebenen Funktion $f(x)$, d.h. suche $x^\star$, sodass $f(x^\star)=0$ oder $|f(x^\star)| < \epsilon$
+	\begin{enumerate}
+		\item Taylorreihe von $f(x)$: $f(x+\triangle) \approx f(x) + f'(x) \cdot \triangle + \dots$
+		\item $0 = f(x^\star) \approx f(x) + f'(x) \cdot \triangle = 0 \Rightarrow \triangle = -\frac{f(x)}{f'(x)}$
+		\item Iterationsvorschrift: $x^{(t+1)} = x^{(t)} - \frac{f(x^{(t)}}{f'(x^{(t)}}$
+		\item Anwendung auf WurzeL: setze $f(x) = x^2 -y \Rightarrow mit f(x^\star) =0 gilt (x^\star)^2 -y=0$
+		\item Iterationsvorschrift: $x^{(t+1)} = x^{(t)} - \frac{(x^{(t)})^2 -y}{2 x^{(t)}} = \frac{(x^{(t)})^2 + y}{2 x^{(t)}}$ \\
+		$ x^{(t+1)} = \frac{x^{(t)} + \frac{y}{x^{(t)}}}{2}$ mit $ x^\star = \sqrt{y} \Rightarrow x^{(t+1)} = \sqrt{y}$
+		
+	\end{enumerate}
+	\begin{lstlisting} [tabsize = 2]
+		double sqrt (double y) {
+			if (y<0.0) {
+				std::cout << "Wurzel aus negativer Zahl \n";
+				return -1.0;
+			}
+			if (y == 0.0) {
+				return 0.0;
+			}
+			double x = y;  // initial guess
+			double epsilon = 1e-15 * y;  // double Genauigkeit
+			
+			while (abs(x*x-y) > epsilon) {
+				x = (x + y/x) / 2.0 ;
+			}
+			return x;
+		}
+	\end{lstlisting}
 	
 \end{document}
