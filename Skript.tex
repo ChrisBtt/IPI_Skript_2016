@@ -227,7 +227,7 @@
 		\end{enumerate}
 	\end{enumerate}
 	
-	\begin{lstlisting}
+	\begin{lstlisting} [tabsize = 2]
 	# include <iostream> 
 	# include <string> 
 	
@@ -243,7 +243,7 @@
 	
 	\paragraph{Overloading der arithmetischen Operationen}
 	
-	\begin{lstlisting}
+	\begin{lstlisting} [tabsize = 2]
 		int a = 3;
 		int b = 4;
 		int c = a * b;
@@ -532,16 +532,18 @@
 			t = t+1
 		}
 	\end{lstlisting}
+	
 	Newtonverfahren: finde Nullstelle einer gegebenen Funktion $f(x)$, d.h. suche $x^\star$, sodass $f(x^\star)=0$ oder $|f(x^\star)| < \epsilon$
+	
 	\begin{enumerate}
 		\item Taylorreihe von $f(x)$: $f(x+\triangle) \approx f(x) + f'(x) \cdot \triangle + \dots$
 		\item $0 = f(x^\star) \approx f(x) + f'(x) \cdot \triangle = 0 \Rightarrow \triangle = -\frac{f(x)}{f'(x)}$
 		\item Iterationsvorschrift: $x^{(t+1)} = x^{(t)} - \frac{f(x^{(t)}}{f'(x^{(t)}}$
-		\item Anwendung auf WurzeL: setze $f(x) = x^2 -y \Rightarrow mit f(x^\star) =0 gilt (x^\star)^2 -y=0$
+		\item Anwendung auf Wurzel: setze $f(x) = x^2 -y \Rightarrow mit f(x^\star) =0 gilt (x^\star)^2 -y=0$
 		\item Iterationsvorschrift: $x^{(t+1)} = x^{(t)} - \frac{(x^{(t)})^2 -y}{2 x^{(t)}} = \frac{(x^{(t)})^2 + y}{2 x^{(t)}}$ \\
 		$ x^{(t+1)} = \frac{x^{(t)} + \frac{y}{x^{(t)}}}{2}$ mit $ x^\star = \sqrt{y} \Rightarrow x^{(t+1)} = \sqrt{y}$
-		
 	\end{enumerate}
+	
 	\begin{lstlisting} [tabsize = 2]
 		double sqrt (double y) {
 			if (y<0.0) {
@@ -559,6 +561,144 @@
 			}
 			return x;
 		}
+	\end{lstlisting}
+	
+	\paragraph{\textit{for} - Schleife}
+	Zum Vergleich mit der while-Schleife:
+	\begin{lstlisting} [tabsize = 2]
+		int c = 0;
+		while (c < 3) {
+			... // unser code
+			c += 1;  //sonst funktionsunfaehig
+		}
+	\end{lstlisting}
+	die \textit{for} - Schleife ist dagegen "'idiotensicher"'
+	\begin{lstlisting} [tabsize = 2]
+		for (int c =0;  // Initialisierung
+				c < 3;  // Bedingung (oder: c!=3)
+				c+=1) {  // Incrementierungsanweisung
+					... // unser code
+				}
+	\end{lstlisting}
+	\begin{itemize}
+		\item Befehle, um Schleifen vorzeitig abzubrechen:
+		\begin{itemize}
+			\item \textit{continue} (bricht aktuelle Iteration ab und springt zum Schleifenkopf)
+			\item \textit{break} (bricht die ganze Schleife ab und springt hinter die schließende Klammer)
+			\item \textit{return} (beendet die Funktion und damit auch die Schleife)
+		\end{itemize}
+		\item 3 gleichbedeutende Beispiele:
+		\begin{lstlisting} [tabsize = 2]
+			for (int c =0; c<10; ++c) {
+				if (c %" ==0) {  // gerade Zahl?
+					std::cout << c << "\n";
+				}
+			}
+			
+			/* Sobald in der if-Anweisung nur eine Zeile steht, kann sie weggelassen 
+				werden. Das ist gefaehrlich und die Klammern sollten eher trotzdem
+				gesetzt werden */
+			
+			for (int c =0; c<10; ++c) {
+				if (c %2 !=0) { // nicht gerade?
+					continue;
+				}
+				std::cout << c << "\n" ;
+			}
+			
+			for (int c =0; c<10; c+=2) {
+				std::cout << c << "\n" ;
+			}
+		\end{lstlisting}
+		\item mit den wichtigsten Schleifen ist bereits ein guter Grundstein für die vielseitige Programmierung gelegt
+	\end{itemize}
+	
+	\section{Datentypen}
+	\begin{itemize}
+		\item Basistypen:  \\
+		Bestandteil der Sprachsyntax und normalerweise direkt von der Hardware(CPU) unterstützt
+		\begin{itemize}
+			\item int (ganze Zahlen)
+			\item double (Fließkommazahlen)
+			\item bool (\textit{true} oder \textit{false})
+			\item später mehr
+		\end{itemize}
+		\item zusammengesetzte Typen: \\
+		mithilfe von \textit{struct} oder \textit{class} aus einfacheren Typen zusammengebaut
+		\begin{itemize}
+			\item Standardtypen: in der $C++$ Standardbibliothek definiert (\#\textit{include ..})
+			\item Bsp: std::string mit \#\textit{include <string>}
+			\item externe Typen: aus anderer Bibliothek, die man zuvor herunterladen und installieren muss
+			\item eigene Typen: vom Programmierer selbst implementiert
+		\end{itemize}
+		\item durch "'objekt-orientierte Programmierung"' erreicht man, dass zusammengesetzte Typen genauso einfach, bequem und effizient sind, wie Basistypen
+		\item "'Kappselung"': die interne Strukter und Implementation ist für den Benutzer unsichtbar
+		\item Benutzer manipuliert Speicher über Funktionen ("'member functions"') $\approx$ Schnittstelle des Typs Interface \\
+		\begin{lstlisting} [tabsize = 2]
+			zusammenges_typ_name    var_name = initial-wert;  // init
+			var_name.foo(a1, a2);  // oder: foo(var_name, a1, a2)
+		\end{lstlisting}
+	\end{itemize}
+	
+	\paragraph{Zeichenketten - String}
+\begin{itemize}
+	\item zwei Datentypen in $C++$
+	\item klassischer C-String: \textit{char}[] ("'character array"')
+	\item $C++$-String: \textit{std::string} - gekappselt und bequem
+	\item String-Literale: "'Zeichenkette"'
+	\item einzelnes Zeichen: 'z' \\
+		Vorsicht: die String-Literale sind C-Strings(gibt keine $C++$ String-Literale)
+	\item Initialisierung: 
+		\begin{lstlisting}
+			std::string s1 = "abcde";  // Zuweisung
+			std::string s2 = s1;
+			std::string leer = "";
+			s1.size()   // Laenge (Anzahl der Zeichen)
+			s1.empty()  // Test: s1.size() ==0
+		\end{lstlisting}
+		\item Addition: Strings aneinanderreihen ("'concalculate"')
+		\begin{lstlisting}
+			std::string s3 = s + "i,k;  // "xyi,k"
+			std::string s3 = s + s;   // "xyxy"
+			std::string s3 = "abc" + "def";  // Bug - Literale unterstuetzen + mit ganz anderer Bedeutung
+		\end{lstlisting}
+		\item Add-Assignement: Abkürzung für Addition gefolgt von Zuweisung
+		\begin{lstlisting}
+			s += "nmk";  // ist gleich zu:
+			s = s + "nmk";  // "xynmk"
+			s3 = (s + "abc") + "def";  // ok
+		\end{lstlisting}
+		\item die Zeichen werden intern in einem C-Array gespeichert \\
+		Array: zusammenhängende Folge von Speicherzellen des gleichen Types, hier: \textit{char}
+	\end{itemize}
+	\begin{tabular} {|c|c|c|c|c|} \hline
+		a & b & c & d & e \\
+		\hline
+	\end{tabular}
+	Länge: 5;     s[index] $\in \{0,1,2,3,4\}$
+	\begin{lstlisting}
+		std::string s = "abcde";
+		for (int k = 0; k < s.size(); ++k) {
+			std::cout << s[k] << "\n";
+		}
+	\end{lstlisting}
+	Variante \kreis{1}: 'in-place' (den alten String überschreiben, selbe Speicherzelle)
+	\begin{lstlisting}
+		int i = 0;
+		int k = s.size()-1;
+		while (1<k) {
+			char tmp = s[i]  // i-tes Zeichen merken
+			s[i] = s[k];
+			s[k] = tmp;
+			--k;  // k = k-1
+			++i;
+		}
+	\end{lstlisting}
+	Variante \kreis{2}: neuen String erzeugen
+	\begin{lstlisting}
+		std::string s = "abcde";
+		std::string r = "";
+		for (int k =s.size()-1; k>=0; --k)
 	\end{lstlisting}
 	
 \end{document}
