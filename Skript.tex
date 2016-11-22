@@ -768,7 +768,50 @@
 		\item wird der Name nicht gefunden, suche in der Elternumgebung weiter mit \kreis{1} oder \kreis{2}
 		\item wird der Name bis zur Wurzel nicht gefunden $\Rightarrow$ Fehlermeldung
 		\item ist der Name in mehreren Umgebungen vorhanden, gilt das zuerst gefundene (Typ, Wert)
-		
 	\end{itemize}
+	 $\Rightarrow$ Programmierer muss selbst darauf achten, dass:
+	 \begin{enumerate}
+	 	\item bei der Suche die gewünschte Speicherzelle gefunden wird $\Rightarrow$ benutze "'sprechende"' Namen
+	 	\item der aktuelle Wert der richtige ist $\Rightarrow$ beachte Reihenfolge der Befehle!
+	 \end{enumerate}
+	 \paragraph{Namensräume}
+		 spezielle Umgebungen in der globalen Umgebung (auch geschachtelt) mit einem Namen
+	 	\begin{itemize}
+	 		\item Ziele:
+	 		\begin{itemize}
+	 			\item Gruppieren von Funktionalität in Module (zusätzlich zu Headern)
+	 			\item Verhindern von Namenskollisionen
+	 			\item Beispiel: $C++$ Standardbiblithek
+	 			\begin{lstlisting}[tabsize = 2]
+	 				namespace std {
+		 				double sqrt (double x);
+		 				namespace chrono {
+			 				class system_clock;
+		 				}
+	 				}
+	 			\end{lstlisting}
+	 			$\Rightarrow \quad std::sqrt(x)$ wird zu $sqrt(x)$ \\ \\
+	 			Besonderheit: mehrere Blöcke mit selbem Namensraum werden verschmolzen
+	 			\item Funktionen befinden sich in der globalen Umgebung \\
+	 			$\Rightarrow$ Umgebung der Funktion ist Kind der globalen Umgebung
+	 		\end{itemize}
+	 		\begin{lstlisting} [tabsize = 2]
+	 			int p = 2;
+	 			int q = 3;
+	 			
+	 			int foo (int p) {  // lokales p verdeckt das globale, aber globales q sichtbar
+		 			return p * q;
+	 			}
+	 			
+	 			int main() {
+		 			int k = p * q;  // beides ist global; =6
+		 			int p = 4;  // lokales p, was das globale verdeckt
+		 			int r = p * q;  // lokales p. globales q; =12
+		 			int s = foo(p);  // lokales p wird zum lokalen p von foo(); =12
+		 			int t = foo(q);  // globales q wird zum lokalen p von foo(); =9
+		 			
+	 			}
+	 		\end{lstlisting}
+	 	\end{itemize}
 	
 \end{document}
