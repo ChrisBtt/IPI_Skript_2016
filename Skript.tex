@@ -701,4 +701,74 @@
 		for (int k =s.size()-1; k>=0; --k)
 	\end{lstlisting}
 	
+	
+	\paragraph{Umgebungsmodell}
+	\begin{itemize}
+		\item in prozeduraler Programmierung: Gegenstück zum Substitutionsmodell für funktionale Programmierung
+		\item Zwecke:
+		\begin{itemize}
+			\item Regeln für Auswertung von Ausdrücken
+			\item Regeln für automatische Speichervewaltung: Freigeben nicht mehr benötigter Speicherzellen (nützlich bei in der Praxis immer endlichem Speicher) \\
+			$\Rightarrow$ bessere Approximation von "'unendlich viel Speicher"'
+		\end{itemize}
+		\item Umgebung beginnt normalerweise bei "'\{"' und endet bei "'\}"' \\
+		Ausnahme: for-Schleife, Funktionsdefinitionen, globale Umgebung
+		
+		\begin{lstlisting} [tabsize = 2]
+			for (int k=0; k<10; ++k) {  // Laufvariable Teil der Umgebung
+				... // code 
+			}
+			
+			bool is_email (std::string s) {  // Speicherzellen fuer Argumente 
+														   	// und Ergebnis gehoeren zur Umgebung
+				...  // code
+			}
+		\end{lstlisting}
+		
+		\item automatische Speicherverwaltung:
+		\begin{itemize}
+			\item Speicherzellen, die in einer Umgebung angelegt werden, werden am Ende der Umgebung in umgekehrter Reihenfolge freigegeben
+			\item Compiler fügt vor "'\{"' automatisch die notwendigen Befehle ein
+			\item Speicherzellen in der globalen Umgebung werden dem Programmierenden freigegeben
+			
+			\begin{lstlisting} [tabsize = 2]
+				int global = 1;
+				
+				int main() {
+					int l = 2;
+					{
+						int m = 3;
+					}    // m wird freigegeben
+				}    // l wird freigegeben
+				    // global wird freigegeben
+			\end{lstlisting}
+		\end{itemize}
+		\item Umgebungen können beliebig tief geschachtelt werden \\
+		$\Rightarrow$ alle Umgebungen bilden einen Baum, mit der globalen Umgebung als Wurzel
+		\item Funktionen sind in der globalen Umgebung definiert \\
+		$\Rightarrow$ Umgebung jeder Funktion sind "'Kinder"' der globalen Umgebung (Ausnahme: Namensräume)
+		$\Rightarrow$ Funktionsumgebung ist \underline{nicht} Kind der Umgebung, in der sie aufgerufen wird
+		\item Jede Umgebung besitzt eine \underline{Zuordnungstabelle} für alle Speicherzellen, die in der Umgebung definiert werden
+		\begin{tabular} {c|c|c}
+			Name & Typ & aktueller Wert \\
+			\hline
+			l & int & 2
+		\end{tabular}
+		\item jeder Name kann pro Umgebung nur $1\times$ vorkommen ()gleichzeitig in anderen Umgebungen) \\
+		Ausnahme: Funktionsnamen können mehrmals vorkommen bei "'function overloading"' ($C++$)
+		\item Alle Befehle werden relativ zur aktuellen Umgebung ausgeführt \\
+		aktuell: Zuordnungstabelle der gleichen Umgebung \& aktueller Wert zum Zeitpunkt des Aufrufs (Zeitpunkt wichtig im Substitutionsmodell)
+	\end{itemize}
+	Beispiel:     $c = a*B$ ; \\
+	Regeln:
+	\begin{itemize}
+		\item wird der Name (a,b,c) in der aktuellen Zuordnungstabelle gefunden: \\
+		\kreis{1} Typisierung $\Rightarrow$ Fehlermeldung, wenn Typ und Operation zusammenpassen \\
+		\kreis{2} andernfalls, setze aktuellen Wert aus Tabelle in Ausdruck ein \\
+		\item wird der Name nicht gefunden, suche in der Elternumgebung weiter mit \kreis{1} oder \kreis{2}
+		\item wird der Name bis zur Wurzel nicht gefunden $\Rightarrow$ Fehlermeldung
+		\item ist der Name in mehreren Umgebungen vorhanden, gilt das zuerst gefundene (Typ, Wert)
+		
+	\end{itemize}
+	
 \end{document}
