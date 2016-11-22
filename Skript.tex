@@ -774,7 +774,10 @@
 	 	\item bei der Suche die gewünschte Speicherzelle gefunden wird $\Rightarrow$ benutze "'sprechende"' Namen
 	 	\item der aktuelle Wert der richtige ist $\Rightarrow$ beachte Reihenfolge der Befehle!
 	 \end{enumerate}
+	 
+	 
 	 \paragraph{Namensräume}
+	 
 		 spezielle Umgebungen in der globalen Umgebung (auch geschachtelt) mit einem Namen
 	 	\begin{itemize}
 	 		\item Ziele:
@@ -795,6 +798,7 @@
 	 			\item Funktionen befinden sich in der globalen Umgebung \\
 	 			$\Rightarrow$ Umgebung der Funktion ist Kind der globalen Umgebung
 	 		\end{itemize}
+	 		\end{itemize}
 	 		\begin{lstlisting} [tabsize = 2]
 	 			int p = 2;
 	 			int q = 3;
@@ -809,9 +813,33 @@
 		 			int r = p * q;  // lokales p. globales q; =12
 		 			int s = foo(p);  // lokales p wird zum lokalen p von foo(); =12
 		 			int t = foo(q);  // globales q wird zum lokalen p von foo(); =9
-		 			
 	 			}
 	 		\end{lstlisting}
-	 	\end{itemize}
+		 	 Beispiel: $\textit{my\_sin}$ (Übung 3.3)
+
+	 	\begin{lstlisting}
+	 	double taylor_sin (double x) {
+		 	return x - std::pow(x,3)/6.0;
+	 	}
+	 	
+	 	double pump_sin (double sin_third) {
+		 	return 3.0*sin_third - 4.0 * std::pow(sin_third,3)
+	 	}
+	 	
+	 	double pi_2 = 2.0*M_PI;
+	 	
+	 	double normalize (double x) {
+		 	double k = std::floor(x/pi_2);   // wie vielte Periode
+		 	double y = x-pi_2*k;   // 0 <= y < pi_2
+		 	return (y <= M_PI) ? y : y-pi_2;   // -pi < result <= pi
+	 	}
+	 	
+	 	double my_sin (double x) {
+		 	double y = normalize(x) ;
+		 	return (std::abs(y)<=0.15) ? taylor_sin(y) : pump_sin(y/3.0);
+	 	}
+	 	\end{lstlisting}
+	 	
+	 	
 	
 \end{document}
