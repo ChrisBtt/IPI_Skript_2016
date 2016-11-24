@@ -15,8 +15,13 @@
 \newcommand{\kreis}[1]{\unitlength1ex\begin{picture}(2.5,2.5)%
 	\put(0.75,0.75){\circle{2.5}}\put(0.75,0.75){\makebox(0,0){#1}}\end{picture}}
 
+\tikzset{
+	state/.style={
+			rectangle, rounded corners,
+			draw=black,  thick, minimum height=2em, inner sep=2pt, text centered},
+		}
+
 \begin{document}
-	
 	\section{Rechenoperationen}
 	\begin{enumerate}
 		\item Baum besteht aus Knoten (Kreise) und Kanten (Pfeile)
@@ -775,7 +780,7 @@
 	 	\item der aktuelle Wert der richtige ist $\Rightarrow$ beachte Reihenfolge der Befehle!
 	 \end{enumerate}
 	 
-	 
+	 \section{Umgebungen}
 	 \paragraph{Namensräume}
 	 
 		 spezielle Umgebungen in der globalen Umgebung (auch geschachtelt) mit einem Namen
@@ -817,7 +822,7 @@
 	 		\end{lstlisting}
 		 	 Beispiel: $\textit{my\_sin}$ (Übung 3.3)
 
-	 	\begin{lstlisting}
+	 	\begin{lstlisting} [tabsize = 2]
 	 	double taylor_sin (double x) {
 		 	return x - std::pow(x,3)/6.0;
 	 	}
@@ -838,8 +843,210 @@
 		 	double y = normalize(x) ;
 		 	return (std::abs(y)<=0.15) ? taylor_sin(y) : pump_sin(y/3.0);
 	 	}
+	 	
+	 	int main() {
+		 	double r = my_sin(0.78) ;
+	 	}
 	 	\end{lstlisting}
 	 	
+	 	
+	 %	\begin{tikzpicture} [->, >= stealth']
+	 	
+	 %	\node[state] (global)
+		% 	{\begin{tabular}{1}
+		%	 			globale Umgebung \\
+		%	 			\parbox{4cm}{\begin{lstlisting}
+		%	 					pi_2 = 6.28
+		%	 				\end{lstlisting}} \\ [4em]
+		%	 		\end{tabular}};
+
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 %	\end{tikzpicture}
+	 	
+	 	\paragraph{Referenzen}
+	 	
+	 	\begin{itemize}
+	 		\item sind neue (zusätzliche) Namen für vorhandene Speicherzellen
+	 		
+	 		\begin{lstlisting} [tabsize = 2]
+		 		int x = 3;   // neue Variable x mit neuer Speicherzelle
+		 		int & y = x; // Referenz: y ist neuer Name fuer x, beide haben dieselbe Speicherzelle
+		 		
+		 		y = 4; // Zuweisung an y, aber x aendert sich auch, d.h. x == 4
+		 		x = 5; // jetzt y == 5
+		 		
+		 		int const & z = x; // read-only Referenz, d.h. z = 6 ist verboten
+		 		x = 6;   // jetzt auch z == 6
+	 		\end{lstlisting}
+	 		\item Hauptanwendung:
+	 		\begin{itemize}
+	 			\item Umgebung, wo eine Funktion aufgerufen wird und die Umgebung der Implementation sind unabhängig, d.h. Variablen der einen Umgebung sind in der anderen nicht sichtbar
+	 		\end{itemize}
+	 		Beispiel: 
+	 		\begin{lstlisting} [tabsize = 2]
+		 		int foo (int x) {  // pass-by-value (Uebergabe des echten Werts)
+			 		x += 3;
+			 		return x;
+		 		}
+		 		
+		 		int bar (int & x) {  // pass-by-reference (Uebergabe der Adresse der Speicherzelle)
+			 		y += 3;
+			 		return y;
+		 		}
+		 		
+		 		void baz (int & z) {  // pass-by-reference
+			 		z += 3;  // kein return Wert
+		 		}
+		 		
+			 	int main() {
+			 		int a = 2;
+			 		std::cout << foo(a) << "\n";  // Ausgabe: 5
+			 		std::cout << a << "\n";    // Ausgabe 2
+			 		
+			 		std::cout << bar(a) << "\n";  // Ausgabe: 5
+			 		std::cout << a << "\n";   // Ausgabe: 5
+			 		
+			 		baz(a);
+			 		std::cout << a << "\n";
+		 		}
+		 		
+	 		\end{lstlisting}
+	 		\item Funktionen die Werte nur über eine Referenz änder heißen Seiteneffekt der Funktion \\
+	 		(Haupteffekt ist immer der return Wert) [in der funktionalen Programmierung sind Seiteneffekte verboten mit Ausnahme von Ein-/Ausgabe]
+
+	 	\item Ziele
+	 	\begin{enumerate}
+	 		\item häufig möchte man Speicherzellen in beiden Umgebungen teilen $\Rightarrow$ verwende Referenzen
+	 		\item häufig will man vermeiden, dass eine Variable kopiert wird (pass-by-value) \\
+	 		$\Rightarrow$ durch \textit{pass-by-value} braucht man keine Kopie $\Rightarrow$ typisch $const \, \& \approxeq$ read-only, \underline{keine} Seiteneffekte
+	 	\end{enumerate}
+	 	
+	 	\begin{lstlisting} [tabsize = 2]
+	 		void print_string(std::string const & s) {
+		 		std::cout << s;
+	 		}
+	 	\end{lstlisting}
+	 \end{itemize}
+	 
+	 \section{Container-Datentypen}
+	 dienen dazu, andere Datentypen aufzubewahren
+	 \begin{itemize}
+	 	\item Art der Elemente
+	 	\begin{itemize}
+		 	\item homogene Container: alle Elemente haben den gleichen Typ (typisch für $C++$)
+		 	\item heterogene Container: Elemnte können verschiedene Typen haben (z.B. Python)
+	 	\end{itemize}
+	 	\item Art der Größe
+	 	\begin{itemize}
+	 		\item statische Container: feste Größe, zur Compilezeit bekannt
+	 		\item dynamische Container: Größe zur Laufzeit veränderbar
+	 	\end{itemize}
+	 	\item Arrays sind die wichtigsten Container, weil effizient auf Hardware abgebildet und einfach zu benutzen
+	 	\begin{itemize}
+	 		\item klassisch: Arrays sind statisch, z.B. C-Arrays (hat $C++$ geerbt)
+	 		\item modern: dynamische Arrays:
+	 		\begin{itemize}
+	 			\item Entdeckung einer effizienten Implementierung
+	 			\item Kapselung durch Objekt-Orientierte-Programmierung (sonst zu kompliziert)
+	 		\end{itemize}
+	 	\end{itemize}
+	 	\item ein dynamisches Array: $std::string$ ist Abbildung $int \rightarrowtail char \quad Index \rightarrow Zeichen$
+	 	\item wir wollen das selbe Verhalten für \underline{beliebige} Elementtypen: $std::vector$
+	 	\begin{lstlisting} [tabsize = 2]
+	 		#include <vector>
+	 		
+	 		std::vector <double> v(20, 0.0) ;  // initialisiert mit Groesse, Initialwert
+	 		
+	 		// analog: std::vector<int>, std::vector<std::string>
+	 	\end{lstlisting}
+	 	Abbildung: $int \rightarrowtail double$
+	 	
+	 	\item weitere Verallgemeinerung: Indextyp beliebig (man sagt dann "'Schlüssel-Typ§"' \\
+	 	typische Fallen:
+	 	\begin{itemize}
+	 		\item Index ist nicht im Bereich $0 \leq Index < size$ ,z.B. Matrikelnummer
+	 		\item Index ist String, z.B. Name eines Studenten
+	 	\end{itemize}
+	 	\item $std::map, \, std::unordered_map$ (Binärer Suchbaum) \\ \\
+	 	 Beispiel:
+	 	 \begin{lstlisting} [tabsize = 2]
+	 	 	std::map <int, double> noten;  // noten[3 1 2 4 5  2 3 1 3] = 1.0
+	 	 	std::map <string, double> noten;  // noten["krause] = 1.0
+	 	 \end{lstlisting}
+	 	 dabei: <Schlüsseltyp, Elementtyp>
+	 \end{itemize}
+	 
+	 \paragraph{$std::vector$}
+	 \begin{itemize}
+	 	\item Erzeugen:
+	 	\begin{lstlisting}
+	 		std::vector <double> v(20, 1.0)
+	 		;std::vector <double> v;   // leeres Array  (erst ab C++ 11)
+	 		
+	 		std::vector <double> v = {1.0, -3.0, 2.2};  // "initializer list"
+	 	\end{lstlisting}
+	 	\item Größe:
+	 	\begin{lstlisting} [tabsize = 2]
+	 		v.size()
+	 		v.empty()  (=v.size() ==0)
+	 	\end{lstlisting}
+	 	\item Größe ändern:
+	 	\begin{lstlisting} [tabsize = 2]
+	 		v.resize(neue_groesse, initialwert)
+			 	1.: neue_gr < size()  // Elemente ab neue_gr geloescht, andere bleiben
+			 	2.: neue_gr > size()  // neue Elemente mit Initialwert am Ende angehaengt
+			 	
+	 		v.push_back(neues_element)  // ein neues Element am Ende anhaengen
+	 		
+	 		v.insert(v.begin+index, neues_element); // neues Element an Position
+								 		// index einfuegen folgende Werte werden 
+								 		// um eine Position verschoben
+				 	v.begin() ist Iterator
+		 	
+		 	v.pop_back()  // letztes Element loeschen (effizient)
+		 	
+		 	v.erase(v.begin()+index)  // Element aus Position loeschen, 
+										 	// hintere Werte verschieben
+		 	
+		 	v.clear()  // alles loeschen
+	 	\end{lstlisting}
+	 	\item Zugriff:
+	 	\begin{lstlisting} [tabsize = 2]
+	 		v[k]  // Element bei Index k
+	 		v.front()  // erstes Element
+	 		v.back()  // letztes Element
+	 		
+	 		v.at(k)  // wie v[k], aber Fehlermeldung, wenn nicht 0<= k < size()
+	 	\end{lstlisting}
+	 	\item Funktionen für Container: benutzen in $C++$ Iteration, damit sie für verschiedenste Container funktionieren
+	 	\item Iteration-Range: 
+	 	\begin{lstlisting} [tabsize = 2]
+	 		v.begin()
+	 		v.end()  // hinter dem letzten Element
+	 		
+	 		im Header <algorithm>
+	 	\end{lstlisting}
+	 	\item alle Elemente kopieren:
+	 	\begin{lstlisting} [tabsize = 2]
+	 		std::vector <double> source = {1.0, 2.0, 3.0, 4.0, 5.0};
+	 		std::vector <double> target(source.size(), 0.0);
+	 		
+	 		std::copy(source.begin(), source.end(), target.begin());
+	 		std::copy(source.begin()+2, source.end(), target.begin());  
+			 		// unbenutzte Initialwerte bleiben erhalten
+	 	\end{lstlisting}
+	 	\item Elemente sortieren:
+	 	\begin{lstlisting} [tabsize = 2]
+	 		std::sort(v.begin(), v.end());  // "in-place"
+	 		std::random_shuffle(v.begin(), v.end())  // "in-place"
+	 	\end{lstlisting}
+	 \end{itemize}
 	 	
 	
 \end{document}
