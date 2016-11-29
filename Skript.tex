@@ -6,8 +6,11 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{german}
+\usepackage{pgf}
 
 \usepackage{tikz}
+\usetikzlibrary{arrows, automata}
+\usetikzlibrary{positioning}
 
 \usepackage{listings}
 \usepackage{color}
@@ -850,24 +853,31 @@
 	 	\end{lstlisting}
 	 	
 	 	
-	 %	\begin{tikzpicture} [->, >= stealth']
+	 	\begin{tikzpicture} [->, >= stealth']
 	 	
-	 %	\node[state] (global)
-		% 	{\begin{tabular}{1}
-		%	 			globale Umgebung \\
-		%	 			\parbox{4cm}{\begin{lstlisting}
-		%	 					pi_2 = 6.28
-		%	 				\end{lstlisting}} \\ [4em]
-		%	 		\end{tabular}};
+	 	\node[state] (global)
+		 	{
 
-	 	
-	 	
-	 	
-	 	
-	 	
-	 	
-	 	
-	 %	\end{tikzpicture}
+				\begin{tabular}{l}
+					\textbf{global} \\
+					\parbox{2cm}{
+							$pi_2 = 6.28$}
+				\end{tabular}
+			};
+
+		\node[state, text width=3cm, right of=global, node distance=6.5cm, anchor=center] (main)
+			{	\begin{tabular}{l}
+					\textbf{main} \\
+					\parbox{2cm}{$r=2$}
+					
+				\end{tabular}
+				
+			};
+%
+%	 	
+%	 	
+%	 	
+	 	\end{tikzpicture}
 	 	
 	 	\paragraph{Referenzen}
 	 	
@@ -958,6 +968,11 @@
 	 	\end{itemize}
 	 	\item ein dynamisches Array: $std::string$ ist Abbildung $int \rightarrowtail char \quad Index \rightarrow Zeichen$
 	 	\item wir wollen das selbe Verhalten für \underline{beliebige} Elementtypen: $std::vector$
+	 \end{itemize}
+	 	
+	 	\paragraph{Datentyp: $std::vector$}
+	 	
+	 	\begin{itemize}
 	 	\begin{lstlisting} [tabsize = 2]
 	 		#include <vector>
 	 		
@@ -965,7 +980,7 @@
 	 		
 	 		// analog: std::vector<int>, std::vector<std::string>
 	 	\end{lstlisting}
-	 	Abbildung: $int \rightarrowtail double$
+	 	\item Abbildung: $int \rightarrowtail double$
 	 	
 	 	\item weitere Verallgemeinerung: Indextyp beliebig (man sagt dann "'Schlüssel-Typ§"' \\
 	 	typische Fallen:
@@ -982,12 +997,11 @@
 	 	 dabei: <Schlüsseltyp, Elementtyp>
 	 \end{itemize}
 	 
-	 \paragraph{$std::vector$}
 	 \begin{itemize}
 	 	\item Erzeugen:
-	 	\begin{lstlisting}
-	 		std::vector <double> v(20, 1.0)
-	 		;std::vector <double> v;   // leeres Array  (erst ab C++ 11)
+	 	\begin{lstlisting} [tabsize = 2]
+	 		std::vector <double> v(20, 1.0);
+	 		std::vector <double> v;   // leeres Array (erst ab C++ 11)
 	 		
 	 		std::vector <double> v = {1.0, -3.0, 2.2};  // "initializer list"
 	 	\end{lstlisting}
@@ -1047,6 +1061,151 @@
 	 		std::random_shuffle(v.begin(), v.end())  // "in-place"
 	 	\end{lstlisting}
 	 \end{itemize}
+	 
+	 \paragraph{Warum ist $push\_back()$ effizient?}
+	 
+	 \begin{itemize}
+	 	\item veraltete Lehrmeinung: Arrays sind nur effizient, weenn statisch (d.h. Größe zur Compilezeit, spätestens bei Initialisierung bekannt)
+	 	\item modern: bei vielen Anwenduungen genügt, wenn Array (meist) nur am Ende vergrößert wird (z.B. $push\_back$) \\
+	 	dies kann sehr effizient unterstützt werden $\Rightarrow$ dynamisches Array
+	 	\item $std::vector$ verwaltet intern ein statisches Array der Größe "'$v.capacity() >= v.size()$"'
+	 	\begin{itemize}
+	 		\item wird das interne Array zu klein $\Rightarrow$ wird automatisch auf ein doppelt so großes umgeschaltet
+	 		\item ist das interne Array zu groß, bleiben unbenutzte Speicherzellen als Reserve
+	 	\end{itemize}
+	 	\item Verhalten bei $push\_back()$
+	 	\begin{itemize}
+	 		\item noch Reserve vorhanden: lege neues Element in eine unbenutzte Speicherzelle $\Rightarrow$ billig \& chillig
+	 		\item keine Reserve: 
+	 		\begin{enumerate}
+	 			\item alloziere neues statisches Array mit doppelter Kapazität
+	 			\item kopiere die Daten aus allem ins neue Array
+	 			\item gebe das alte Array frei
+	 			\item gehe zu  \kreis{1}, jetzt wieder Reserve vorhanden \\ Umkopieren ist nicht teuer, da es nur selten nötig ist
+	 		\end{enumerate}
+	 		\item Beispiel:
+	 		\begin{lstlisting}
+	 			std::vector <int> v;
+	 			for (int k = 0; k < 32; ++k) {
+	 			v.push_back(k);
+	 			}
+	 		\end{lstlisting}
+	 		\begin{tabular} {c|c|c|c|c|c}
+		 		k & $cap\, vor \, p\_b()$ & $cap\, nach \, p\_b()$ & $size()$ & Reserve & Umkopierung \\
+		 		\hline
+		 		0 & 0 & 1 & 1 & 0 & 0 \\
+		 		1 & 1 & 2 & 2 & 0 & 1 \\
+		 		2 & 2 & 4 & 3 & 1 & 2 \\
+		 		3 & 4 & 4 & 4 & 0 & 0 \\
+		 		4 & 4 & 8 & 5 & 3 & 4 \\
+		 		5 $\dots$ 7 & 8 & 8 & 8 & 0 & 0 \\
+		 		8 & 8 & 16 & 9 & 7 & 8 \\
+		 		9 $\dots$15 & 16 & 16 & 16 & 0 & 0 \\
+		 		16 & 16 & 32 & 17 & 15 & 16 \\
+	 		\end{tabular} \\ \\
+	 				 		$\cdots$
+	 	\end{itemize}
 	 	
+	 	\item Kosten:
+	 	\begin{itemize}
+	 		\item 32 Elemente einfügen $=$ 32 Kopien extern $\Rightarrow$ intern
+	 		\item aus altem Array ins neue kopieren $=$ 31 Kopien intern $\Rightarrow$ intern \\
+	 		$\Rightarrow$ im Durchschnitt sind pro Einführung 2 Kopien nötig \\
+	 		$\Rightarrow$ dynamisches Array ist doppelt so teuer, wie das statische \\
+	 		$\Rightarrow$ immer noch sehr effizient
+	 	\end{itemize}
+	 	\item relevante Funktionen von $std::vector$
+	 	\begin{itemize}
+	 		\item $v.size()$: aktuelle Zahl der Elemente
+	 		\item $v.capacity()-v.size()$: Reserve ($\geq 0$)
+		 	\item $v.resize(new\_size)$: ändert immer $v.size()$, aber $v.capacity()$ nur wenn $< new\_size$
+		 	\item $v.reserve(new\_capacity)$: ändert $v.size()$ nicht, aber $v.capacity()$ falls $new\_capacity \geq size$
+		 	\item $v.shrink\_to\_fit()$: $v.reserve(v.size())$ (Reserve ist danach 0), wenn Endgröße erreicht
+	 	\end{itemize}
+	 	\item wenn Reserve $> size$: $capacity$ kann auch halbiert werden
+	 \end{itemize}
+	 
+	 \paragraph{wichtige Container der $C++$ Standardbiblithek}
+	 
+	 \begin{itemize}
+	 	\item dynamisches Arrays: $std::string, std::vector$
+	 	\item assoziative Arrays: $std::map, std::unordered\_map$
+	 	\item Mengen: $std::set, std::unordered\_set$ (jedes Element ist höchstens einmal enthalten)
+	 	\item Stapel: $std::stack$ (Funktion: "'last-in-first-out"') z.B. gestapelte Bierkästen.
+	 	\item Warteschlange: $std::queue$ (Funktion: "'first-in-first-out"')
+	 	\item Kartendeck: $std::deque$ gleichzeitig Stapel und Warteschlange
+	 	\item Stapel mit Priorität: $std::priority\_queue$ (Priorität vom Nutzer definiert)
+	 \end{itemize}
+	 	
+	 \section{Iteratoren}
+	\begin{itemize}
+		\item für Arrays lautet kanonische Schleife:
+		\begin{lstlisting} [tabsize = 2]
+			for (int k = 0; k != v.size(); ++k) {
+				int current = v[k];  // aktuelles Element lesen
+				v[k] = new_value;  // aktuelles Element schreiben
+			}
+		\end{lstlisting}
+		\item wir wollen eine so einfache Schleife für beliebige Container
+		\begin{itemize}
+			\item der Index-Zugriff $v[k]$ ist bei den meisten Containern nicht effizient
+			\item Iteratoren sind immer effizient $\Rightarrow$ es gibt sie in allen modernen Programmiersprachen, aber die Details sind sehr unterschiedlich
+			\item Analogie: Zeiger einer Uhr, Cursor in Textverarbeitung \\
+			$\Rightarrow$ ein Iterator zeigt immer auf ein Element des Containers oder auf Spezialwert "'ungültiges Element"'
+			\item in $C++$ unterstützt jeder Iterator 5 Grundoperationen
+			\begin{enumerate}
+				\item Iterator auf erstes Element erzeugen:
+				\begin{lstlisting} [tabsize = 2]
+					auto iter = v.begin();  // auto ist Universaltyp, wird 
+													// vom Compiler automatisch
+													//  mit richtigen Typen ersetzt
+				\end{lstlisting}
+				\item Iterator auf "'ungültiges Element"' erzeugen:
+				\begin{lstlisting} [tabsize = 2]
+					auto end = v.end()  // typischerweise v[v.size()]
+				\end{lstlisting}
+				\item Vergleich:
+				\begin{lstlisting} [tabsize = 2]
+					iter1 == iter2;
+					iter != end;  (= !(iter == end))  // iter zeigt nicht auf
+																  // ungueltiges Element
+				\end{lstlisting}
+				\item zum nächsten weitergehen: $++iter$, Ergebnis ist $v.end()$, wenn man vorher beim letzten Element war
+				\item auf Daten des aktuellen Elements zugreifen: $*iter$ ("'Dereferenzierung"')
+			\end{enumerate}
+		\end{itemize}
+		\item $\Rightarrow$ kanonische Schleife:
+		\begin{lstlisting} [tabsize = 2]
+			for (auto iter = v.begin(); iter != v.end(); ++iter) {
+				int current = *iter;  // lesender Zugriff;
+				*iter = new_value;  // schreibender Zugriff
+				
+				// Abkuerzung in C++: rang-based for-loop
+				for (int & element : v) {
+					int current = element;  // lesen
+					element = new_value;  // schreiben
+				}
+			}
+		\end{lstlisting}
+		\item wenn die zugrunde liegenden Speicherzellen geändert werden, also die Containergröße sich ändert, werden die Iteratoren ungültig
+		\item Iteratoren mit den 5 Grundoperationen heißen "'forward iterators"' (wegen $++iter$)
+		\item "'bidirectional iterators"' unterstützen auch $--iter$ (alle Iteratoren aus Standardbibliothek)
+		\item "'random access iterators"' können beliebige Sprünge machen ($iter+=5$) \\
+		unterstützt von $std::string$ und $std::vector$
+		\item Besonderheit für assoziative Arrays ($std::map$):
+		\begin{itemize}
+			\item Schlüssel und Werte können beliebig gewählt werden \\
+			$\Rightarrow$ das aktuelle Element ist immer ein Schlüssel/Wert-Paar \\
+			$(*iter).first \Rightarrow$ Schlüssel \\
+			$(*iter).second \Rightarrow$ Wert
+			\begin{lstlisting} [tabsize = 2]
+				v[(*iter).first] == (*iter).second;
+			\end{lstlisting}
+		\end{itemize}
+		\item Bei $std::map$ liefern die Iteratoren die Elemente in aufsteigender Reihenfolge der Schlüssel (Unterschied zu $std::unordered\_map$)
+	\end{itemize}
+	
+	
+	
 	
 \end{document}
