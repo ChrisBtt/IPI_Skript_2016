@@ -1239,7 +1239,11 @@
 		\item Bei $std::map$ liefern die Iteratoren die Elemente in aufsteigender Reihenfolge der Schlüssel (Unterschied zu $std::unordered\_map$)
 	\end{itemize}
 	
+<<<<<<< HEAD
 	\subsection{Die Funktion $std::transform()$}
+=======
+	\paragraph{Die Funktion $std::transform()$}
+>>>>>>> 19bbfc961301f88d1291a395c8d091764c4b0c56
 	
 	\begin{itemize}
 		\item $std::transform()$ erlaubt, die Daten "'on-the-fly"' zu ändern \\
@@ -1272,6 +1276,120 @@
 		
 		\item der Argumenttyp der Funktion muss mit dem $source$-Elementtyp kompatibel sein
 		\item der Argumenttyp der Funktion muss mit dem $target$-Elementtyp kompatibel sein
+<<<<<<< HEAD
+=======
+	
+	\item Das letzte Argument von $std::transform()$ muss ein Funktor sein ($\approxeq$ verhält sich wie eine Funktion) \\
+	Dazu gibt es drei Varianten:
+		\begin{enumerate}
+			\item normale Funktion, z.B. $sq$ Aber wenn die Funktion für mehrere Argumenttypen überladen ist, muss der Programmierer dem Compiler sagen, welche Version gemeint ist \\ $\Rightarrow$ ("'function pointer cast"')
+			\item  Funktorobjekte $\Rightarrow$ objekt-orientierte Programmierung
+			\item definiere eine namenlose Funktion $\approxeq$"'Lamda-Funktionen"' $\lambda$ \\
+			statt $\lambda$ wird in $C++$ $[]$ geschrieben
+		\end{enumerate}
+		\begin{lstlisting} 	[tabsize = 2]
+			std::transform(source.begin(), source.end(), target.begin(), 
+				[] (double x) {  // statt Funktionsname sq, wie bei 1. 
+									// steht hier die ganze Funktionsimplementierung
+					return x*x
+				});  // der Returntypwird automatisch eingesetzt, wenn es 
+					 // nur einen Returntyp gibt
+		\end{lstlisting}
+		\begin{itemize}
+			\item Lambda-Funktionen können noch viel mehr $\Rightarrow$ für Fortgeschrittene
+			\item $std::transform$ kann "'in-place"' arbeiten (d.h. source-Container überschreiben), wenn source und target gleich
+			\item die Funktion $std::sort()$ wird zum "'in-place"' sortieren eines Arrays
+			\begin{lstlisting} [tabsize = 2]
+				std::vector <double> v = {4.0, 2.0, 3.0, 5.0, 1.0};
+				std::sort(v.begin(), v.end());  // -> v = {1.0, 2.0, 3.0, 4.0, 5.0}
+			\end{lstlisting}
+			
+			\item $std::sort()$ ruft intern den "'<"' Operator des Elementtyps auf, um die Reihenfolge zu bestimmen \\ \\
+			\underline{Def:} "'totale Ordnung"'
+			\begin{itemize}
+				\item $a<b$ muss $\forall a,b$ gelten
+				\item transitiv: ($a<b$) $\wedge$ ($b<c$) $\Rightarrow$ ($a<c$)
+				\item anti-symmetrisch: $!(a<b) \wedge !(b<a) \Rightarrow a ==b$
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+	
+	\subsection{Insertion Sort}
+	schnellste Sortieralgor. für kleine Arrays ($n\leq 30$, hängt vom Compiler \& CPU ab)
+	\begin{itemize}
+		\item für große Arrays sind Merge Sort, Heap Sort, Quick Sort schneller
+		\item $std::sort()$ wählt automatisch einen schnellen Algor.
+	\end{itemize}
+	
+	Idee von Insertion Sort: wie beim Aufnehmen und Ordnen eines Kartenblatts
+	\begin{itemize}
+		\item gegeben: bereits sortiertes Teilarray bis zur Position $k-1$
+		\item füge das k-te Element an der richtigen Stelle ein. Erzeuge Lücke an der richtigen Position duch Verschieben von Elementen nach rechts
+		\item wiederhole für $k = 1,\dots , N$  (siehe Übung 5.1 "'Einsortieren"')
+	\end{itemize}
+	\begin{tabular} {cccccc}
+		4 & 2 & 3 & 5 & 1 & \\  
+		4 & & 3 & 5 & 1 & (current = 2) \\
+		 & 4 & 3 & 5 & 1 & \\
+		 2 & 4 & 3 & 5 & 1 & \\
+		 2 & 4 & & 5 & 1 & (current = 3) \\ 
+		 2 & & 4 & 5 & 1 & \\
+		 2 & 3 & 4 & 5 & 1 & \\ 
+		 2 & 3 & 4 & 5 & 1 & \\	 
+		 2 & 3 & 4 &  & 1 & (current = 5)	\\		 
+		 2 & 3 & 4 & 5 & 1 & \\		
+		 2 & 3 & 4 & 5 & 1 & (current = 1)	\\   
+		 1 & 2 & 3 & 4 & 5 & \\
+	\end{tabular}
+	
+	\begin{lstlisting} [tabsize = 2]
+		void insertion_sort(std::vector <double> &v) {
+			for ( int K = 1; k < v.size(); ++k) {
+				double current = v[k];
+				int j = k;   // Anfangsposition der Luecke
+				while (j>0) {
+					if (v[j-1] < current) {
+						break;   // j ist richtige Position der Luecke
+					}
+					v[j] = v[j-1];
+					--j;
+				}
+				v[j] = current;   // current in die Luecke kopieren
+			}
+		}
+	\end{lstlisting}
+	\begin{itemize}
+		\item andere Sortierung: definiere Funktor $cmp(a,b)$ , der das gewünschte "'kleiner"' realisiert $\approxeq$ gibt genau dann $true$ zurück, wenn $a$ "'kleiner $b$ nach neuer Sortierung
+		\item neue Sortierungen am besten per Lambda-Funktion an $std::sort$ übergeben
+		\begin{lstlisting}
+			std::sort(v.begin(), v.end());  // Standardsortierung aufsteigend
+			
+			std::sort(v.begin(), v.end(),   // Standardsortierung aufsteigend
+							[](double a, double b) {
+								return a<b;
+							}
+			)
+			
+			std::sort(v.begin(), v.end(),   // absteigende Sortierung
+						[](double a, double b) {
+							return b<a;
+						}
+			)
+						
+			std::sort(v.begin(), v.end(),   //   normale Sortierung nach Betrag
+						[](double a, double b) {
+							return std::abs(a) < std::abs(b);
+						}
+			)
+			
+			// Stringvergleich 
+			std::vector <std::string> v = {"Ac", "ab", "De", "cf"};  
+			std::vector <std::string> v = {"Ac", "De", "ab", "cf"}  // case insensitive
+			std::vector <std::string> v = {"ab", "Ac", "cf", "De"}  // case sensitive
+			
+		\end{lstlisting}
+	\end{itemize}
+>>>>>>> 19bbfc961301f88d1291a395c8d091764c4b0c56
 	
 	\item Das letzte Argument von $std::transform()$ muss ein Funktor sein ($\approxeq$ verhält sich wie eine Funktion) \\
 	Dazu gibt es drei Varianten:
