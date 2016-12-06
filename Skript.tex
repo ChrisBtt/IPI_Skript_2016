@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 \usepackage{german}
 \usepackage{pgf}
+\usepackage{listings}
 
 \usepackage{tikz}
 \usetikzlibrary{arrows, automata}
@@ -18,6 +19,35 @@
 \newcommand{\kreis}[1]{\unitlength1ex\begin{picture}(2.5,2.5)%
 	\put(0.75,0.75){\circle{2.5}}\put(0.75,0.75){\makebox(0,0){#1}}\end{picture}}
 
+\lstdefinestyle{customc}{  % Config der lstlisting Umgebung
+	belowcaptionskip=1\baselineskip,
+	breaklines=true,
+	frame=single,
+	xleftmargin=\parindent,
+	language=C++,
+	showstringspaces=false,
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\bfseries\color{green!40!black},
+	commentstyle=\itshape\color{purple!40!black},
+	identifierstyle=\color{blue},
+	stringstyle=\color{orange},
+}
+\lstset{literate=  % Sonderzeichen in lstlisting Umgebung
+	{á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+	{à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+	{À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+	{ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+	{Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+	{â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+	{Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+	{œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+	{ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+	{ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+	{€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+	{»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
+}
+\lstset{style=customc, tabsize=2}
 \tikzset{
 	state/.style={
 			rectangle, rounded corners,
@@ -602,7 +632,7 @@
 		\item 3 gleichbedeutende Beispiele:
 		\begin{lstlisting} [tabsize = 2]
 			for (int c =0; c<10; ++c) {
-				if (c %" ==0) {  // gerade Zahl?
+				if (c%2 ==0) {  // gerade Zahl?
 					std::cout << c << "\n";
 				}
 			}
@@ -670,7 +700,7 @@
 		\end{lstlisting}
 		\item Addition: Strings aneinanderreihen ("'concalculate"')
 		\begin{lstlisting}
-			std::string s3 = s + "i,k;  // "xyi,k"
+			std::string s3 = s + "i,k";  // "xyi,k"
 			std::string s3 = s + s;   // "xyxy"
 			std::string s3 = "abc" + "def";  // Bug - Literale unterstuetzen + mit ganz anderer Bedeutung
 		\end{lstlisting}
@@ -1209,7 +1239,7 @@
 		\item Bei $std::map$ liefern die Iteratoren die Elemente in aufsteigender Reihenfolge der Schlüssel (Unterschied zu $std::unordered\_map$)
 	\end{itemize}
 	
-	\paragraph{Die Funktion $std::transform()$}
+	\subsection{Die Funktion $std::transform()$}
 	
 	\begin{itemize}
 		\item $std::transform()$ erlaubt, die Daten "'on-the-fly"' zu ändern \\
@@ -1325,7 +1355,7 @@
 	\begin{itemize}
 		\item andere Sortierung: definiere Funktor $cmp(a,b)$ , der das gewünschte "'kleiner"' realisiert $\approxeq$ gibt genau dann $true$ zurück, wenn $a$ "'kleiner $b$ nach neuer Sortierung
 		\item neue Sortierungen am besten per Lambda-Funktion an $std::sort$ übergeben
-		\begin{lstlisting}
+		\begin{lstlisting} [tabsize = 2]
 			std::sort(v.begin(), v.end());  // Standardsortierung aufsteigend
 			
 			std::sort(v.begin(), v.end(),   // Standardsortierung aufsteigend
@@ -1379,6 +1409,170 @@
 	
 	"'ElementType"' ist Platzhalter für den tatsächlichen Elementtyp und wird vom Compiler automatisch ersetzt.
 	
+	
+	\section{Grundlagen der generischen Programmierung}
+	
+	\begin{itemize}
+		\item Ziel: benutze $template$-Mechanismus, damit \underline{eine} Implementation für viele verschiedene Typen verwendbar ist \\
+		erweitert funktionale und prozedurale und objekt-orientierte Programmierung
+		\item zwei Arten von Templates ("'Schablonen"')
+		\begin{enumerate}
+			\item Klassen-Templates für Datenstrukturen, z.B. Containersollen beliebige Elementtypen unterstützen
+			\begin{itemize}
+				\item Implementation $\Rightarrow$ später
+				\item Benutzung: Datenstrukturname gefolgt vom Elementtyp in spitzen Klammern \\
+				$std::vector\, <double>$
+			\end{itemize}
+			\item Funktionen-Templates: es gab schon "'function overloading"' \\
+			Beispiel:
+			\begin{lstlisting} [tabsize = 2]
+				int sq (int x) {
+					return x * x;
+				}
+				
+				double sq (double x) {
+					return x * x;
+				}
+				... usw fuer komplexe Zahlen
+			\end{lstlisting}
+			$\Rightarrow$ Nachteile:
+			\begin{itemize}
+				\item wenn die Implementationen gleich sind nutzlose Arbeit
+				\item Redundanz ist gefährlich, korrigiert man ein Bug, wird leicht eine Variante vergessen
+			\end{itemize}
+		\end{enumerate}
+	\end{itemize}
+			
+	\subsection{Funktionen-Templates}
+			mit Templates reicht eine Implementation:
+			\begin{lstlisting} [tabsize = 2]
+				template <typename T>  // T ist Platzhalter fuer beliebigen Typ
+										// wird spaeter durch einen tatsaelichen Typ ersetzt
+				T sq (T x) {
+					return x * x;  // impliziete Anforderung an den Typ:
+								// er muss Multiplikation unterstuetzen
+					
+				}
+			\end{lstlisting}
+	\begin{itemize}
+		\item Benutzung:
+		\begin{itemize}
+			\item Typen für die Platzhalter hinter dem Funktionsnamen in spitzen Klammern
+			\item meist kann man die Typangabe $<type>$ weglassen, weil der Compiler sie anhand des Argumenttyps automatisch einsetzt
+		\end{itemize}
+		\item kombiniert man Templates mit Overloading, wird die ausprogrammierte Variante vom Compiler bevorzugt
+		\item Funktion, die ein Array aus Konsole ausgibt:
+		\begin{lstlisting} [tabsize = 2]
+			std::vector <double> v = {1.0, 2.0, 3.0};
+			print_vector(v);  // {1.0, 2.0, 3.0}
+		\end{lstlisting}
+		für beliebige Elementtypen:
+		\begin{lstlisting} [tabsize = 2]
+			template <typename ElemtType>
+			void print_vector(std::vector <ElementType> const & v) {
+			// const: read-only , &: nur Kopie verwenden
+				std::cout << "{";
+				if ( v.size() > 0) {
+					std::cout << " " << v[0];
+					for (int k = 1; k<v.size(); ++k) {
+						std::cout <<  " " << v[k];
+					}
+				}
+				std::cout << " }";
+			}
+		\end{lstlisting}
+		\item Verallgemeinerung für beliebige Container mittels Iteratoren:
+		\begin{lstlisting}
+			std::list <int> l = {1,2,3};
+			print_container (l.begin(), l.end())  // {1,2,3}
+		\end{lstlisting}
+		\item es genügen forward iterators
+		\begin{lstlisting} [tabsize = 2]
+			Iterator iter2 = iter;  // Kopie erzeugen
+			++iter1;  // zum naechsten Element
+			iter1 == iter2, iter1 != end  // zeigen sie auf das selbe Element
+			+ iter1  // Zugriff auf aktuelles Element
+			
+			template <typename Iterator>
+			
+			void print_container(Iterator begin, Iterator end) {
+				std::cout << "{";
+				if (begin != end) {  // teste, ob Container leer
+					std::cout << " " << *begin;
+					++begin;
+					for (.. ; begin != end; ++begin) {
+						std::cout << ", " << *begin;
+					}
+				}
+				std::cout << "}";
+			}
+		\end{lstlisting}
+		\item Beispiel 3: checken, ob Container sortiert ist
+		\begin{lstlisting} [tabsize = 2]
+			Version 1: hard-coded
+			
+			bool check_sorted (std::vector <double> const & v) {
+				for (int k = 1; k < v.size(); ++k) {
+					if (v[k] < v[k-1]) {  // Sortierfehler durch Ausnutzen 
+												 // der Transitivitaet
+							return false;
+					}
+				}
+				return true;  // Schleife ohne Fehler zuende gelaufen
+			}
+			
+			Version 2: beliebige Elementtypen, beliebige Sortierung
+			
+			template <typename ElementType, typename LessThanFunctor>
+			
+			bool check_sorted(std::vector<ElementType> const & v, typename LessThanFunctor) {
+				for (int k = 1; k < v.size(); ++k) {
+					if (less_than(v[k], v[k-1])) {
+						return false;
+					}
+				}
+				reurn true;
+			}
+		\end{lstlisting}
+		\begin{itemize}
+			\item Aufruf von Version 2 mit "'lambda-function"':
+			\begin{lstlisting}
+				std::vector <double> v = {1.0, 2.0, 3.0};
+				check_sorted(v, [] (double a, double b) {
+					return a<b;
+				});  // true
+				
+				check_sorted(v, [] (double a, double b) {
+					return a>b;
+				});  // true
+			\end{lstlisting}
+			\item Version 3 mit "'forward-iterator"':
+			\begin{lstlisting}
+				template <typename Iterator, typename LessThanFunctor>
+				bool check_sorted(Iterator begin, Iterator end, 
+								LessThanFunctor less_than)
+					{
+						if (begin == end) {  // Container leer?
+							return true;  // leerer Container immer sortiert
+						}
+						Iterator next = begin;  
+						++ next;  // next zeigt auf Element nach Iterator begin
+						
+						for (..; next != end; ++begin; ++next) {  // Iteratoren zeigen 
+														//auf zwei benachbarte Elemente
+							if (less_than(*next , *begin))	{
+								return false;
+							}
+						}
+					}
+			\end{lstlisting}
+		\end{itemize}
+		\item Bemerkungen:
+		\begin{enumerate}
+			\item Compiler-Fehlermeldungen bei Template-Code sind oft schwer zu implementieren $\Rightarrow$ Erfahrung nötig
+			\item mit Templates kann man noch viel raffiniertere Dinge machen, z.B. Traits-Klassen, intelligent libraries, template metaprogramming $\Rightarrow$ nur für Fortgeschrittene
+		\end{enumerate}
+	\end{itemize}
 	
 	
 \end{document}
