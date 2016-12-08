@@ -16,6 +16,8 @@
 \usepackage{listings}
 \usepackage{color}
 
+\usepackage{hyperref}
+
 \newcommand{\kreis}[1]{\unitlength1ex\begin{picture}(2.5,2.5)%
 	\put(0.75,0.75){\circle{2.5}}\put(0.75,0.75){\makebox(0,0){#1}}\end{picture}}
 
@@ -60,6 +62,7 @@
 	\newpage
 	
 	\section{Rechenoperationen}
+	\label{beispiel}
 	\begin{enumerate}
 		\item Baum besteht aus Knoten (Kreise) und Kanten (Pfeile)
 		\item Kanten verbinden Knoten mit ihren Kind-Knoten
@@ -1389,8 +1392,8 @@
 			
 		\end{lstlisting}
 	\end{itemize}
->>>>>>> 19bbfc961301f88d1291a395c8d091764c4b0c56
-	
+
+	\begin{itemize}
 	\item Das letzte Argument von $std::transform()$ muss ein Funktor sein ($\approxeq$ verhält sich wie eine Funktion) \\
 	Dazu gibt es drei Varianten:
 		\begin{enumerate}
@@ -1618,7 +1621,7 @@
 				if (begin != end) {  // teste, ob Container leer
 					std::cout << " " << *begin;
 					++begin;
-					for (.. ; begin != end; ++begin) {
+					for (; begin != end; ++begin) {
 						std::cout << ", " << *begin;
 					}
 				}
@@ -1676,7 +1679,7 @@
 						Iterator next = begin;  
 						++ next;  // next zeigt auf Element nach Iterator begin
 						
-						for (..; next != end; ++begin; ++next) {  // Iteratoren zeigen 
+						for (; next != end; ++begin, ++next) {  // Iteratoren zeigen 
 														//auf zwei benachbarte Elemente
 							if (less_than(*next , *begin))	{
 								return false;
@@ -1691,6 +1694,170 @@
 			\item mit Templates kann man noch viel raffiniertere Dinge machen, z.B. Traits-Klassen, intelligent libraries, template metaprogramming $\Rightarrow$ nur für Fortgeschrittene
 		\end{enumerate}
 	\end{itemize}
+	
+	\section{Bestimmung der Effizienz von Algorithmen und Datenstrukturen}
+	
+	\begin{itemize}
+		\item 2 Möglichkeiten
+		\begin{enumerate}
+			\item messe die "'wall clock time"' (wie lange muss man auf ein Ergebnis warten)
+			\item unabhängig von Hardware: algorithmische Komplexität
+		\end{enumerate}
+		\item "'wall-clock-time"' misst man z.B. mit dem Modul $<chrono>$
+		\begin{lstlisting}
+			#include <chrono>
+			#include <iostream>
+			
+			int main() {
+				...  // alles zur Zeitmesung vorbereiten, z.B. Daten einlesen
+				
+				auto start = std::chrono::high_resolution_clock::now();  // Startzeit merken
+					...  // Code, der gemessen werden soll
+				auto stop = std::chrono::high_resolution_clock::now();  // Endzeit merken
+				std::chrono::duration<double> diff = stop-start;  // Zeitdifferenz (Laufzeit) in Sekunden
+				std::cout << "Zeitdauer: " << diff.count() << " sekunden \n";)
+			}
+		\end{lstlisting}
+		\item in der Praxis nicht so einfach $\Rightarrow$ Pitfalls:
+		\begin{itemize}
+			\item moderne Compiler optimieren oft zu viel, d.h. komplexe Berechnungen werden zur Compilezeit ausgeführt und ersetzt $\Rightarrow$ gemessene Zeit viel zu kurz gegenüber der Praxis \\
+			Abhilfe: Daten nicht "'hard-wired"', sondern z.B. von Platte lesen ($volatile$ beim Initialisieren)
+			\item der Algorithmus ist schneller als die clock  \\
+			Abhilfe: rufe den Algorithmus mehrmals in einer Schleife auf
+		\item die Ausstattung des Programms kann vom Betriebssystem jederzeit für etwas wichtigeres unterbrochen werden $\Rightarrow$ gemessene Zeit ist zu lang \\
+		Abhilfe: messe mehrmals und nimm die kürzeste Zeit (meist reicht 3-10x)
+		\item Faustregel: Messung zwischen 0.02-3 Sekunden zur optimalen Nutzung der clock
+		\end{itemize}
+		\item Nachteil: Zeit hängt besonders von der Qualität der Implementation, den Daten und der Hardware ab
+		\item algorithmische Komplexität ist davon unabhängig $\approxeq$ "'theoretisches Effizienzmaß"' \\
+		beschreibt, wie sich die Laufzeit verlängert, wenn man mehr Daten hat \\
+		
+		$\Rightarrow$ bei effizienten Algrorithmen steigt der Aufwand mit n nur langsam (oder bestenfalls gar nicht)
+		
+		\subsection{technisches Effizienzmaß}
+		\begin{itemize}
+			\item berechne, wie viele elementare Schritte der Algorithmus in Abhängigkeit von n benötigt $\Rightarrow$ komplizierte Formel $f(n)$
+			\item vereinfache $f(n)$ in eine einfache Formel $g(n)$, die dasselbe wesentliche Verhalten zeigt  \\
+			Die Vereinfachung erfolgt mittels \underline{O-Notation} und ihren Verwandten
+		\end{itemize}
+		
+		\subsection{O-Notation / $\Omega$-Notation}
+		\begin{enumerate}
+			\item $g(n)$ ist eine asymptotische (für große n) obere Schranke für $f(n)$ ($f(n) \leq g(n)$) //
+			$f(n) \in \mathcal{O}(g(n))$ ($f(n)$ ist in der Komplexitätsklasse $g(n)$, wenn es ein $n_0$ und $C$ gibt, sodass $\forall n > n_0: \Leftrightarrow f(n) \in \mathcal{O}(g(n))$
+			
+			\item $g(n)$ ist asymptotisch untere Schranke für $f(n)$ ($f(n) \geq g(n)$) \\
+			$f(n) \in \Omega(g(n)) \Leftrightarrow \exists n_0, C , sodass \forall n>n_0: f(n) \geq C \cdot g(n)$
+			\item $g(n)$ ist  asymptotisch scharfe Schranke für $f(n)$ ($f(n) = g(n)$) \\
+			$f(n) \in \Theta(g(n)) \Leftrightarrow f(n) \in O(g(n)) \wedge f(n) \in \Omega(g(n))$
+		\end{enumerate}
+		Regeln:
+		\begin{enumerate}
+			\item $f(n) \in \Theta(f(n)) \Rightarrow f(n) \in O(f(n)), f(n) \in \Omega/f(n))$
+			\item $f(n) \in \Theta(f(n)) \Rightarrow C \cdot f(n) \in \Theta(f(n))$
+			\item $O(f(n)) \cdot O(g(n)) \in = O(f(n) \cdot g(n))$
+			\item $O(f(n)) + O(g(n)) \in O(max(f(n),g(n))$ \\
+			formell: $f(n) \in O(g(n)) \Rightarrow O(f(n)) + O(g(n)) \in O(g(n))$
+						$g(n) \in O(f(n)) \Rightarrow O(g(n)) + O(g(n)) \in O(f(n))$
+			
+		\end{enumerate}
+		\begin{itemize}
+			\item beliebteste Wahl für $g(n)$:
+			\begin{itemize}
+				\item $O(1)$ "' konstante Komplexität"', Bsp: elementare Operationen, Array-Zugriff
+				\item $O(log(n))$ "'logarithmische Komplexität"', Bsp: Zugriff auf ein Element von $std::map$
+				\item O(n) "'lineare Komplexität"', Bsp: $std::transform$
+				\item $O(log(n) \cdot n)$ "'$n \cdot log(n)$"',"'quasilinear"', Bsp: $std::sort()$
+				\item $O(n^2)$ "'quadratische Komplexität"'
+				\item $O(n^p) p=const.$ "'polynomelle Komplexität"'
+				\item $O(2^n)$ "'exponentielle Komplexität"'
+			\end{itemize}
+			\item Beispiele:  \\
+			$f(n)=1+15n+4n^2+7n^3 \in O(n^3)$ \\
+			$f(n)=n \cdot log(n) + n^2 \in O(n \cdot log(n) + n\cdot n) \in \mathcal{O}(n) \cdot \mathcal{O}(log(n) + n) \in \mathcal{O}(n) \cdot \mathcal{O}(n) \in \mathcal{O}(n^2)$
+			
+			$\Rightarrow$ es gewinnt immer die am stärksten wachsende Funktion
+		\end{itemize}
+		Anwendung 1: Fibonacci-Zahlen: $f_k = f_{k-2} + f_{k-1}$  \\ \\
+		\begin{tabular} {c|c|c|c|c|c|c|c|c|c}
+			k & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+			\hline
+			$f_k$ & 0 & 1 & 1 & 2 & 3 & 5 & 8 & 13 & 21 
+		\end{tabular} \\
+		\begin{lstlisting}
+			int fib1 (int k) {  // O(k)
+				if (k<2) {  // O(1)
+					return k;  // O(1)
+				}
+				int f1 = 1;  // O(1)
+				int f2 = 1;  // O(1)
+			
+				for (int j = 2; j<=k; ++j) {  // O(k)
+					int f = f1 + f2;  // O(1)
+					f1 = f2;  // O(1)
+					f2 = f;  // O(1)
+				}
+				
+				return f2;  // O(1)
+			}
+			
+			int fib2 (int k) {
+				if (k<2) {
+					return k;
+				}
+				return fib2(k-2)+fib2(k-1));
+			}
+		\end{lstlisting}
+		
+		 \begin{tikzpicture}[level/.style={sibling distance=60mm/#1}]
+		 
+		 \node [circle, draw] (z)  {$fib2(5)$}
+		 child {node [circle, draw] {$3$}
+		 	child {node [circle, draw] {$1$}
+		 		child{node [draw] {$1$}}
+		 	}
+		 	child {node [circle, draw] {$2$}
+		 		child{node [circle, draw] {$0$}
+		 			child {node [draw] {$0$}}
+		 		}
+		 		child{node [circle, draw] {$1$}
+		 			child {node [draw] {$1$}}
+		 		}
+		 	}}
+		 	child {node [circle, draw] {$4$}
+		 		child{node [circle, draw] {$2$}
+			 		child{node [circle, draw] {$0$}
+				 		child{node [draw] {$0$}}
+				 	}
+				 	child{node [circle, draw] {$1$}
+					 	child{node [circle, draw] {$1$}}
+					}
+				 child{node [circle, draw] {$3$}
+					child{node [circle, draw] {$1$}
+						  child{node [draw] {$1$}}
+					 }
+					 child {node [circle, draw] {$2$}
+					 	child{node [circle, draw] {$0$}
+					 		child {node [draw] {$0$}}
+					 	}
+					 	child{node [circle, draw] {$1$}
+					 		child {node [draw] {$1$}}
+					 	}
+					 }}}
+		 	};
+		 	\end{tikzpicture} \\
+		$\Rightarrow$ sehr ineffizient, weil alle Fib-Zahlen $<k$ mehrmals berechnet werden \\
+		Sei $f(k)$ die Anzahl der Schritte, Annahme: jeder Knoten ist $\mathcal{0}(1) \Rightarrow \mathcal{O}(Knoten)$
+		Sei $f'(k)$ die Anzahl der Schritte, oberhalb (oberhalb ist der Baum vollständig (jeder innere Knoten hat genau 2 Kinder))
+		\begin{align*}
+			 f'(k) &= 2^{l+1}-1 \\
+			 &= 2^{k/2+1}-1 \\
+			 &=2 \cdot 2^{k/2}-1 \\
+			 &= 2 \cdot (\sqrt{2})^k-1 \in \Omega(\sqrt{2})^k  \\
+			 &\Rightarrow exponentielle Komplexität \\
+		\end{align*}
+	\end{itemize}
+	
 	
 	
 \end{document}
