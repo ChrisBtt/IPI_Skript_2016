@@ -5,7 +5,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb}
 \usepackage{amsmath}
-\usepackage{german}
+\usepackage{amsfonts}
+\usepackage{ngerman}
 \usepackage{pgf}
 \usepackage{listings}
 
@@ -1715,7 +1716,7 @@
 					...  // Code, der gemessen werden soll
 				auto stop = std::chrono::high_resolution_clock::now();  // Endzeit merken
 				std::chrono::duration<double> diff = stop-start;  // Zeitdifferenz (Laufzeit) in Sekunden
-				std::cout << "Zeitdauer: " << diff.count() << " sekunden \n";)
+				std::cout << "Zeitdauer: " << diff.´() << " sekunden \n";)
 			}
 		\end{lstlisting}
 		\item in der Praxis nicht so einfach $\Rightarrow$ Pitfalls:
@@ -1747,15 +1748,15 @@
 			$f(n) \in \mathcal{O}(g(n))$ ($f(n)$ ist in der Komplexitätsklasse $g(n)$, wenn es ein $n_0$ und $C$ gibt, sodass $\forall n > n_0: \Leftrightarrow f(n) \in \mathcal{O}(g(n))$
 			
 			\item $g(n)$ ist asymptotisch untere Schranke für $f(n)$ ($f(n) \geq g(n)$) \\
-			$f(n) \in \Omega(g(n)) \Leftrightarrow \exists n_0, C , sodass \forall n>n_0: f(n) \geq C \cdot g(n)$
+			$f(n) \in \Omega(g(n)) \Leftrightarrow \exists n_0, C , sodass\, \forall n>n_0: f(n) \geq C \cdot g(n)$
 			\item $g(n)$ ist  asymptotisch scharfe Schranke für $f(n)$ ($f(n) = g(n)$) \\
 			$f(n) \in \Theta(g(n)) \Leftrightarrow f(n) \in O(g(n)) \wedge f(n) \in \Omega(g(n))$
 		\end{enumerate}
 		Regeln:
 		\begin{enumerate}
-			\item $f(n) \in \Theta(f(n)) \Rightarrow f(n) \in O(f(n)), f(n) \in \Omega/f(n))$
+			\item $f(n) \in \Theta(f(n)) \Rightarrow f(n) \in \mathcal{O}(f(n)), f(n) \in \Omega/f(n))$
 			\item $f(n) \in \Theta(f(n)) \Rightarrow C \cdot f(n) \in \Theta(f(n))$
-			\item $O(f(n)) \cdot O(g(n)) \in = O(f(n) \cdot g(n))$
+			\item $\mathcal{O}(f(n)) \cdot \mathcal{O}(g(n)) \in = \mathcal{O}(f(n) \cdot g(n))$
 			\item $O(f(n)) + O(g(n)) \in O(max(f(n),g(n))$ \\
 			formell: $f(n) \in O(g(n)) \Rightarrow O(f(n)) + O(g(n)) \in O(g(n))$
 						$g(n) \in O(f(n)) \Rightarrow O(g(n)) + O(g(n)) \in O(f(n))$
@@ -1764,17 +1765,17 @@
 		\begin{itemize}
 			\item beliebteste Wahl für $g(n)$:
 			\begin{itemize}
-				\item $O(1)$ "' konstante Komplexität"', Bsp: elementare Operationen, Array-Zugriff
-				\item $O(log(n))$ "'logarithmische Komplexität"', Bsp: Zugriff auf ein Element von $std::map$
-				\item O(n) "'lineare Komplexität"', Bsp: $std::transform$
-				\item $O(log(n) \cdot n)$ "'$n \cdot log(n)$"',"'quasilinear"', Bsp: $std::sort()$
-				\item $O(n^2)$ "'quadratische Komplexität"'
-				\item $O(n^p) p=const.$ "'polynomelle Komplexität"'
-				\item $O(2^n)$ "'exponentielle Komplexität"'
+				\item $\mathcal{O}(1)$ "' konstante Komplexität"', Bsp: elementare Operationen, Array-Zugriff
+				\item $\mathcal{O}(log(n))$ "'logarithmische Komplexität"', Bsp: Zugriff auf ein Element von $std::map$
+				\item $\mathcal{O}(n)$ "'lineare Komplexität"', Bsp: $std::transform$
+				\item $\mathcal{O}(log(n) \cdot n)$ "'$n \cdot log(n)$"',"'quasilinear"', Bsp: $std::sort()$
+				\item $\mathcal{O}(n^2)$ "'quadratische Komplexität"'
+				\item $\mathcal{O}(n^p) p=const.$ "'polynomelle Komplexität"'
+				\item $\mathcal{O}(2^n)$ "'exponentielle Komplexität"'
 			\end{itemize}
 			\item Beispiele:  \\
-			$f(n)=1+15n+4n^2+7n^3 \in O(n^3)$ \\
-			$f(n)=n \cdot log(n) + n^2 \in O(n \cdot log(n) + n\cdot n) \in \mathcal{O}(n) \cdot \mathcal{O}(log(n) + n) \in \mathcal{O}(n) \cdot \mathcal{O}(n) \in \mathcal{O}(n^2)$
+			$f(n)=1+15n+4n^2+7n^3 \in \mathcal{O}(n^3)$ \\
+			$f(n)=n \cdot log(n) + n^2 \in \mathcal{O}(n \cdot log(n) + n\cdot n) \in \mathcal{O}(n) \cdot \mathcal{O}(log(n) + n) \in \mathcal{O}(n) \cdot \mathcal{O}(n) \in \mathcal{O}(n^2)$
 			
 			$\Rightarrow$ es gewinnt immer die am stärksten wachsende Funktion
 		\end{itemize}
@@ -1847,14 +1848,14 @@
 		 	};
 		 	\end{tikzpicture} \\
 		$\Rightarrow$ sehr ineffizient, weil alle Fib-Zahlen $<k$ mehrmals berechnet werden \\
-		Sei $f(k)$ die Anzahl der Schritte, Annahme: jeder Knoten ist $\mathcal{0}(1) \Rightarrow \mathcal{O}(Knoten)$
+		Sei $f(k)$ die Anzahl der Schritte, Annahme: jeder Knoten ist $\mathcal{O}(1) \Rightarrow \mathcal{O}(Knoten)$
 		Sei $f'(k)$ die Anzahl der Schritte, oberhalb (oberhalb ist der Baum vollständig (jeder innere Knoten hat genau 2 Kinder))
 		\begin{align*}
 			 f'(k) &= 2^{l+1}-1 \\
 			 &= 2^{k/2+1}-1 \\
 			 &=2 \cdot 2^{k/2}-1 \\
 			 &= 2 \cdot (\sqrt{2})^k-1 \in \Omega(\sqrt{2})^k  \\
-			 &\Rightarrow exponentielle Komplexität \\
+			 & \Rightarrow exponentielle \, Komplexit\ddot{a}t \\
 		\end{align*}
 	\end{itemize}
 	

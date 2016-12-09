@@ -1,0 +1,9 @@
+# ignored files:
+
+*.toc
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.aux
+*.fdb_latexmk
