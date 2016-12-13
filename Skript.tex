@@ -287,7 +287,7 @@
 	}
 	\end{lstlisting}
 	
-	\paragraph{Overloading der arithmetischen Operationen}
+	\subsection{Overloading der arithmetischen Operationen}
 	
 	\begin{lstlisting} [tabsize = 2]
 		int a = 3;
@@ -299,7 +299,7 @@
 	\end{lstlisting}
 	$3.0 * 4 \quad \Rightarrow \quad$ automatische Umwandlung in höheren Typ, hier: \grqq double\grqq $\Rightarrow$ wird als $3.0 * 4.0$ ausgeführt \\
 	
-	\paragraph{Interger-Division in $C++$}
+	\subsection{Interger-Division in $C++$}
 	
 	Konsequenzen:
 	\begin{enumerate}
@@ -329,7 +329,7 @@
 		\end{lstlisting}
 	\end{enumerate}
 	
-	\paragraph{Anwendung}
+	\subsection{Anwendung}
 	
 	Wochentag für beliebiges Datum bestimmen:
 	gegeben: $d,m,y$ , gesucht: $w \in \{0,\dots , b\}$ \\
@@ -384,7 +384,7 @@
 		\end{lstlisting}
 	 	\end{itemize}
 	 	
-	 	\paragraph{Bedingungen}
+	 	\subsection{Bedingungen}
 	 	\begin{itemize}
 	 		\item Bei den meisten Algorithmen ist die Reihenfolge der Schritte \underline{nicht} fix, sondern hängt von den Eingabedaten ab
 	 		\item Beispiel: Auswahl der Offset $d \rightarrow x$ hängt von m ab \\
@@ -416,7 +416,7 @@
 		 	\end{lstlisting}
 	 	\end{itemize}
 	 	
-	 	\paragraph{Rekursion}
+	 	\subsection{Rekursion}
 	 	
 	 	bedeutet: eine Funktion ruft sich selbst auf (evtl. indirekt)
 	 	\begin{itemize}
@@ -437,7 +437,7 @@
 	 		\end{itemize}
 	 	\end{itemize}
 	 	
-	 	\paragraph{Von der funktionalen zur prozeduralen Programmierung}
+	 	\subsection{Von der funktionalen zur prozeduralen Programmierung}
 	 	\begin{itemize}
 	 		\item Eigenschaften der FP:
 	 		\begin{itemize}
@@ -530,7 +530,7 @@
  		\end{itemize}
  	\end{itemize}
 	
-	\paragraph{Schleifen}
+	\subsection{Schleifen}
 	 der gleiche Code soll oft wiederholt werden \\ \\
 	 
 	 \begin{lstlisting} [tabsize = 2]
@@ -567,7 +567,7 @@
 		\end{lstlisting}
 	\end{itemize}
 	
-	\paragraph{Anwendung: Wurzelberechnung}
+	\subsection{Anwendung: Wurzelberechnung}
 	
 	Ziel: \text{double sqrt (double y)}
 	Methode: \underline{iterative Verbesserung} mittels Newtonverfahren
@@ -686,7 +686,7 @@
 		\end{lstlisting}
 	\end{itemize}
 	
-	\paragraph{Zeichenketten - String}
+	\subsection{Zeichenketten - String}
 \begin{itemize}
 	\item zwei Datentypen in $C++$
 	\item klassischer C-String: \textit{char}[] ("'character array"')
@@ -748,7 +748,7 @@
 	\end{lstlisting}
 	
 	
-	\paragraph{Umgebungsmodell}
+	\subsection{Umgebungsmodell}
 	\begin{itemize}
 		\item in prozeduraler Programmierung: Gegenstück zum Substitutionsmodell für funktionale Programmierung
 		\item Zwecke:
@@ -822,7 +822,7 @@
 	 \end{enumerate}
 	 
 	 \section{Umgebungen}
-	 \paragraph{Namensräume}
+	 \subsection{Namensräume}
 	 
 		 spezielle Umgebungen in der globalen Umgebung (auch geschachtelt) mit einem Namen
 	 	\begin{itemize}
@@ -917,7 +917,7 @@
 %	 	
 	 	\end{tikzpicture}
 	 	
-	 	\paragraph{Referenzen}
+	 	\subsection{Referenzen}
 	 	
 	 	\begin{itemize}
 	 		\item sind neue (zusätzliche) Namen für vorhandene Speicherzellen
@@ -1716,7 +1716,7 @@
 					...  // Code, der gemessen werden soll
 				auto stop = std::chrono::high_resolution_clock::now();  // Endzeit merken
 				std::chrono::duration<double> diff = stop-start;  // Zeitdifferenz (Laufzeit) in Sekunden
-				std::cout << "Zeitdauer: " << diff.´() << " sekunden \n";)
+				std::cout << "Zeitdauer: " << diff() << " sekunden \n";)
 			}
 		\end{lstlisting}
 		\item in der Praxis nicht so einfach $\Rightarrow$ Pitfalls:
@@ -1742,9 +1742,9 @@
 			Die Vereinfachung erfolgt mittels \underline{O-Notation} und ihren Verwandten
 		\end{itemize}
 		
-		\subsection{O-Notation / $\Omega$-Notation}
+		\subsection{$\mathcal{O}$-Notation/$\Omega$-Notation}
 		\begin{enumerate}
-			\item $g(n)$ ist eine asymptotische (für große n) obere Schranke für $f(n)$ ($f(n) \leq g(n)$) //
+			\item $g(n)$ ist eine asymptotische (für große n) obere Schranke für $f(n)$ ($f(n) \leq g(n)$) \\
 			$f(n) \in \mathcal{O}(g(n))$ ($f(n)$ ist in der Komplexitätsklasse $g(n)$, wenn es ein $n_0$ und $C$ gibt, sodass $\forall n > n_0: \Leftrightarrow f(n) \in \mathcal{O}(g(n))$
 			
 			\item $g(n)$ ist asymptotisch untere Schranke für $f(n)$ ($f(n) \geq g(n)$) \\
@@ -1831,8 +1831,8 @@
 				 		child{node [draw] {$0$}}
 				 	}
 				 	child{node [circle, draw] {$1$}
-					 	child{node [circle, draw] {$1$}}
-					}
+					 	child{node [draw] {$1$}}
+					}}
 				 child{node [circle, draw] {$3$}
 					child{node [circle, draw] {$1$}
 						  child{node [draw] {$1$}}
@@ -1844,7 +1844,7 @@
 					 	child{node [circle, draw] {$1$}
 					 		child {node [draw] {$1$}}
 					 	}
-					 }}}
+					 }}
 		 	};
 		 	\end{tikzpicture} \\
 		$\Rightarrow$ sehr ineffizient, weil alle Fib-Zahlen $<k$ mehrmals berechnet werden \\
@@ -1854,11 +1854,169 @@
 			 f'(k) &= 2^{l+1}-1 \\
 			 &= 2^{k/2+1}-1 \\
 			 &=2 \cdot 2^{k/2}-1 \\
-			 &= 2 \cdot (\sqrt{2})^k-1 \in \Omega(\sqrt{2})^k  \\
+			 &= 2 \cdot (\sqrt{2})^k-1 \\ &\in \Omega(\sqrt{2})^k  \\
 			 & \Rightarrow exponentielle \, Komplexit\ddot{a}t \\
 		\end{align*}
 	\end{itemize}
 	
+	\section{Zahlendarstellung}
+	Problem: unendlich viele Zahlen, aber die Computer sind endlich
+	\subsection{natürliche Zahlen $\mathbb{N}$}
+	$x \geq 0$, ($++$ bietet Typen verschiedener Größe) \\
+
+	\begin{tabular} {c|c|c|c|c}
+		klassisch & mit Größe ($C++$) & $\#$ Bits & Bereiche & Literale \\ \hline
+		unsigned char & uint8\_t & $(\geq) 8$ & $0-256$ & \\
+		unsigned short & $uint16\_t$ & $(\geq) 16$ & $0-65.535$ & \\
+		unsigned int & $uint32\_t$ & $(\geq) 32$ & $0-4\cdot 10^9$ & \\
+		unsigned long & $uint32\_t$ & $32$ oder $64$ & $0-4\cdot 10^9$ & \\
+		unsigned long long & $uint64\_t$ & 64 & $0-2\cdot 10^{19}$ & 4L \\
+	\end{tabular}
 	
+	\paragraph{Was passiert bei zu großen Zahlen?}
+	\begin{itemize}
+		\item alle Operationen werden Modulo $2^m$ ausgeführt, wenn der Typ $m$ Bits hat \\
+		Bsp 1:
+		\begin{lstlisting}
+			uint8_t x = 250, y = 100;
+			uint8_t s = x+t; // 350 % 256 = 94
+			uint8_t p = x*y;  // 2500 % 256 = 168
+		\end{lstlisting}
+		\item Pitfalls \\
+		Beispiel 1: Mittelwert einer $uint8\_t$-Arrays
+		\begin{lstlisting}
+			std::vector <uint8_t> v = {...}
+			uint8_t sum = 0;  // uint32_t od. uint64_t
+			for (int k = 0; k< v.size(); ++k) {
+				sum += v[k];
+			}
+			std::cout << ``Mittelwert: ``'' << (sum(v.size())) << ``\n'';
+		\end{lstlisting}
+		$uint32\_t$ $sum = 0$ verhindert overflow mit hoher Wahrscheinlichkeit\\
+
+		Bsp 2: Count-Down Loop (rückwärts über Array)
+	\begin{lstlisting}
+		for (uint8_t k = v.size()-1; k >= 0; --k) {
+			..  // v[k] zugreifen
+		}
+		uint8_t x = 0;
+		--x;
+	\end{lstlisting}
+
+	\item arithmetische Op. Addition in Kapitel ``Automaten'' \\
+	Substitution kann auf Addition zurückgeführt werden \\
+
+	\paragraph{Erinnerung: Restklassenarithmetik (Modulo)}
+	alle Zahlen mit dem gleichen Rest modulo k bilden ``Äquivalenzklasse'' \\
+
+	hier: kleinste Reprösentanten $0, \dots , k-1$ mit $k=2^{m}$ \\ \\
+	Eigenschaft: man kann Vielfache $n \cdot k$ addieren, ohne Äquivalenzklasse zu ändern
+
+	$\Rightarrow$ implementiere (Addition besser als Subtraktion)
+	\begin{align}
+		&(a-b) \% 2^m \\
+		= &(a+2^m-b)\%2^m \\
+		= &(a+z)\% 2^m
+	\end{align}
+
+	\end{itemize}
+
+\paragraph{bitweise Negation}
+
+	dreht alle Bits um
+
+	\begin{align}
+		& m=4 \sim (1001) \Rightarrow (0110) \\
+		setze: \quad & (2^m -b) \% 2^m = (\sim b+1) \% 2^m \\
+		& b + \sim b = 11 \dots 11 = 2^m-1 \\
+		& \sim b+1 = 2^m-b
+	\end{align}
+	Fall 1:
+	\begin{align*}
+		b > 0 &\Rightarrow ~b < 2^m-1 \\
+		& \Rightarrow ~b+1 < 2^m \\
+		& ~b+1 \% 2^m = ~b+1 \\
+		& (2^m -b) \% 2^m = ~b \% 2^m
+	\end{align*}
+	Fall 2:
+	\begin{align*}
+		& b=0 \Rightarrow ~b = 2^m-1 \\
+		& ~b+1 = 2^m \\
+		& (~b+1) \% 2^m = 0 \\
+		& 2^m - b = 2^m \\
+	\end{align*}
+
+	\paragraph{Multiplikation}
+	\begin{itemize}
+		\item neue Operationen $\ll$ und $\gg$ (left und right shift)
+		verschiebt die Bits um $k$ Positionen nach links oder rechts. Die herausgeschobenen Bits werden vergessen, auf der anderen Seite durch $0$-Bits ersetzt. \\
+		\begin{align*}
+			m = 8 : & 11011101 \ll 3 = 11101000 \\
+			& 11011101 \gg 3 = 00011011
+		\end{align*}
+		\item Satz: \\
+			$x \ll k = (x*2^m) \% 2^m$
+		\item Operationen $\&$ und $|$ sind bitweise ``und'' bzw. ``oder'' Verknüpfungen \\
+		nicht verwechseln mit $\&\&$ bzw. $||$ für logische Operatoren \\ für $m=8:$
+
+			\begin{align*}
+				&1 0 1 1 0 0 1 1  \quad \& \, 1 \\
+				&0 0 0 0 0 0 0 1 \\ \hline 
+				&0 0 0 0 0 0 0 1 \\ \\
+				&1 0 1 1 0 0 1 1 \quad | \, 1 \\
+				&0 0 0 0 0 0 0 1 \\ \hline
+				&0 0 0 0 0 0 0 1 
+			\end{align*}
+
+	\begin{lstlisting}
+		uint8_t mal(uint8_t x, uint8_t y) {
+			uint8_t res = 0;
+			for (int k = 0; k < 8; ++k) {
+			    if (y & (1 << k) != 0) {
+			    	res += k;
+			    }
+			    x = x << 1;  // = x*2
+			}
+			return res;
+		}
+	\end{lstlisting}	
+
+\end{itemize}
+
+\subsection{ganze Zahlen $\mathbb{Z}$}
+	\begin{tabular} {c|c|c|c}
+		klassisch & Typ mit Größe & Bits & Bereich \\ \hline
+		signed char & $int8\_t$ & $8$ & $-127 \dots 128$ \\
+		signed short & $int16\_t$ & $16$ & $-127 \dots 2^{15}-1 $ \\
+		signed int & $int32\_t$ & $32$ & $-2^{31} \dots 2^{31}-1$ \\
+		signed long & $int32\_t$ & $32$ oder $64$ & $-2^{63} \dots 2^{63}-1$\\
+		signed long long & $int64\_t$ & $64$ & $-2^{63} \dots 2^{63}-1$ \\
+	\end{tabular}
 	
+	für Restklassen: statt $0 \dots 2^m $ bei unsigned \\
+	jetzt: $-2^{m-1} \dots 2^{m-1}-1 $ (symmetrisch um 0) \\ \\
+	d.h. $x<2^{m-1} $: Repräsentant bleibt \\
+	$x \geq 2^{m-1} $: neuer Reprösentant, $x-2^m $ (gleiche Restklasse) \\ \\ Konsequenzen:
+
+	\begin{itemize}
+		\item bei negativer Zahl ist höchste Bit $1$, weil $x \rightarrow x-2^m $, falls $x \geq 2^{m-1} $
+		\item unäre Negation $-x$ durch Zweierkomplement:
+		\begin{align*}
+			& -x = (~x+1)\%2^m \\
+			Bsp: & -0 = (~000000+1) \% 2^8 \\
+			&    = (1111111+1) \% 2^8 \\
+			&     = 100000000 \% 2^8 \\
+			& = 0 \\
+			Bsp: & -1 = (~00000001 + 1) \% 2^8 \\ 
+			& (~ 11111110 + 1) \% 2^8 \\
+			& = 11111111 \% 2^8 \\
+			& = 11111111 \\
+			& = 2^8-1 < 2^8 
+		\end{align*}
+
+		\item Ausnahmeregel: für $\gg$ bei negativen Zahlen Compilerabhängig, meist wird links ein Bit reingeschrieben, damit Zahl negativ bleibt $\Rightarrow$ es gilt immer noch $x \gg h = \lfloor x/2^k\rfloor$
+	\end{itemize}
+
+
+
 \end{document}
