@@ -1853,15 +1853,15 @@
 		\begin{align*}
 			 f'(k) &= 2^{l+1}-1 \\
 			 &= 2^{k/2+1}-1 \\
-			 &=2 \cdot 2^{k/2}-1 \\
+			 &= 2 \cdot 2^{k/2}-1 \\
 			 &= 2 \cdot (\sqrt{2})^k-1 \\ &\in \Omega(\sqrt{2})^k  \\
 			 & \Rightarrow exponentielle \, Komplexit\ddot{a}t \\
 		\end{align*}
 	\end{itemize}
 	
-	\section{Zahlendarstellung}
+\section{Zahlendarstellung}
 	Problem: unendlich viele Zahlen, aber die Computer sind endlich
-	\subsection{natürliche Zahlen $\mathbb{N}$}
+\subsection{natürliche Zahlen $\mathbb{N}$}
 	$x \geq 0$, ($++$ bietet Typen verschiedener Größe) \\
 
 	\begin{tabular} {c|c|c|c|c}
@@ -1883,7 +1883,7 @@
 			uint8_t p = x*y;  // 2500 % 256 = 168
 		\end{lstlisting}
 		\item Pitfalls \\
-		Beispiel 1: Mittelwert einer $uint8\_t$-Arrays
+		Beispiel 1: Mittelwert eines $uint8\_t$-Arrays
 		\begin{lstlisting}
 			std::vector <uint8_t> v = {...}
 			uint8_t sum = 0;  // uint32_t od. uint64_t
@@ -1906,18 +1906,18 @@
 	\item arithmetische Op. Addition in Kapitel ``Automaten'' \\
 	Substitution kann auf Addition zurückgeführt werden \\
 
-	\paragraph{Erinnerung: Restklassenarithmetik (Modulo)}
+\paragraph{Erinnerung: Restklassenarithmetik (Modulo)}
 	alle Zahlen mit dem gleichen Rest modulo k bilden ``Äquivalenzklasse'' \\
 
 	hier: kleinste Reprösentanten $0, \dots , k-1$ mit $k=2^{m}$ \\ \\
 	Eigenschaft: man kann Vielfache $n \cdot k$ addieren, ohne Äquivalenzklasse zu ändern
 
 	$\Rightarrow$ implementiere (Addition besser als Subtraktion)
-	\begin{align}
+	\begin{align*}
 		&(a-b) \% 2^m \\
 		= &(a+2^m-b)\%2^m \\
 		= &(a+z)\% 2^m
-	\end{align}
+	\end{align*}
 
 	\end{itemize}
 
@@ -1925,69 +1925,71 @@
 
 	dreht alle Bits um
 
-	\begin{align}
-		& m=4 \sim (1001) \Rightarrow (0110) \\
-		setze: \quad & (2^m -b) \% 2^m = (\sim b+1) \% 2^m \\
-		& b + \sim b = 11 \dots 11 = 2^m-1 \\
-		& \sim b+1 = 2^m-b
-	\end{align}
+	\begin{align*}
+		m=4 \sim (1001) &\Rightarrow (0110) \\
+		setze: \quad (2^m -b) \% 2^m & = \sim (b+1) \% 2^m \\
+		b + \sim b = 11 & \dots 11 = 2^m-1 \\
+		\sim b+1 & = 2^m-b
+	\end{align*}
 	Fall 1:
 	\begin{align*}
-		b > 0 &\Rightarrow ~b < 2^m-1 \\
-		& \Rightarrow ~b+1 < 2^m \\
-		& ~b+1 \% 2^m = ~b+1 \\
-		& (2^m -b) \% 2^m = ~b \% 2^m
+		b > 0 &\Rightarrow \sim b < 2^m-1 \\
+		& \Rightarrow \sim (b+1) < 2^m \\
+		\sim (b+1) \% 2^m & = \sim (b+1) \\
+		(2^m -b) \% 2^m & = \sim b \% 2^m
 	\end{align*}
 	Fall 2:
 	\begin{align*}
-		& b=0 \Rightarrow ~b = 2^m-1 \\
-		& ~b+1 = 2^m \\
-		& (~b+1) \% 2^m = 0 \\
-		& 2^m - b = 2^m \\
+		 b=0 & \Rightarrow \sim b = 2^m-1 \\
+		 \sim b+1 & = 2^m \\
+		(\sim b+1) \% 2^m & = 0 \\
+		2^m - b & = 2^m \\
 	\end{align*}
 
-	\paragraph{Multiplikation}
+\paragraph{Multiplikation}
 	\begin{itemize}
 		\item neue Operationen $\ll$ und $\gg$ (left und right shift)
 		verschiebt die Bits um $k$ Positionen nach links oder rechts. Die herausgeschobenen Bits werden vergessen, auf der anderen Seite durch $0$-Bits ersetzt. \\
 		\begin{align*}
-			m = 8 : & 11011101 \ll 3 = 11101000 \\
-			& 11011101 \gg 3 = 00011011
+			m = 8 : \quad & 11011101 \ll 3 = 11101000 \\
+			& 11011101 \gg 3 = 00011011 
 		\end{align*}
 		\item Satz: \\
-			$x \ll k = (x*2^m) \% 2^m$
+			\begin{flalign}
+				x \ll k = (x*2^m) \% 2^m
+			\end{flalign}
 		\item Operationen $\&$ und $|$ sind bitweise ``und'' bzw. ``oder'' Verknüpfungen \\
 		nicht verwechseln mit $\&\&$ bzw. $||$ für logische Operatoren \\ für $m=8:$
 
 			\begin{align*}
 				&1 0 1 1 0 0 1 1  \quad \& \, 1 \\
-				&0 0 0 0 0 0 0 1 \\ \hline 
+				&0 0 0 0 0 0 0 1 \\ \cline{1-2}
 				&0 0 0 0 0 0 0 1 \\ \\
 				&1 0 1 1 0 0 1 1 \quad | \, 1 \\
-				&0 0 0 0 0 0 0 1 \\ \hline
-				&0 0 0 0 0 0 0 1 
+				&0 0 0 0 0 0 0 1 \\ \cline{1-2}
+				&1 0 1 1 0 0 1 1			
 			\end{align*}
 
-	\begin{lstlisting}
-		uint8_t mal(uint8_t x, uint8_t y) {
-			uint8_t res = 0;
-			for (int k = 0; k < 8; ++k) {
-			    if (y & (1 << k) != 0) {
-			    	res += k;
-			    }
-			    x = x << 1;  // = x*2
+		\begin{lstlisting}
+			uint8_t mal(uint8_t x, uint8_t y) {
+				uint8_t res = 0;
+				for (int k = 0; k < 8; ++k) {
+				    if (y & (1 << k) != 0) {
+				    	res += k;
+				    }
+				    x = x << 1;  // = x*2
+				}
+				return res;
 			}
-			return res;
-		}
-	\end{lstlisting}	
+		\end{lstlisting}	
 
-\end{itemize}
+	\end{itemize}
 
 \subsection{ganze Zahlen $\mathbb{Z}$}
 	\begin{tabular} {c|c|c|c}
 		klassisch & Typ mit Größe & Bits & Bereich \\ \hline
 		signed char & $int8\_t$ & $8$ & $-127 \dots 128$ \\
-		signed short & $int16\_t$ & $16$ & $-127 \dots 2^{15}-1 $ \\
+		signed short & $int16\_t$ & $16$ & $-2^{15} \dots 2^{15}-1 $ \\
 		signed int & $int32\_t$ & $32$ & $-2^{31} \dots 2^{31}-1$ \\
 		signed long & $int32\_t$ & $32$ oder $64$ & $-2^{63} \dots 2^{63}-1$\\
 		signed long long & $int64\_t$ & $64$ & $-2^{63} \dots 2^{63}-1$ \\
@@ -2002,13 +2004,13 @@
 		\item bei negativer Zahl ist höchste Bit $1$, weil $x \rightarrow x-2^m $, falls $x \geq 2^{m-1} $
 		\item unäre Negation $-x$ durch Zweierkomplement:
 		\begin{align*}
-			& -x = (~x+1)\%2^m \\
-			Bsp: & -0 = (~000000+1) \% 2^8 \\
-			&    = (1111111+1) \% 2^8 \\
-			&     = 100000000 \% 2^8 \\
+			-x & = (\sim x+1)\%2^m \\
+			Bsp:  -0 & = (\sim 000000+1) \% 2^8 \\
+			& = (1111111+1) \% 2^8 \\
+			& = 100000000 \% 2^8 \\
 			& = 0 \\
-			Bsp: & -1 = (~00000001 + 1) \% 2^8 \\ 
-			& (~ 11111110 + 1) \% 2^8 \\
+			Bsp:  -1 &= (~00000001 + 1) \% 2^8 \\ 
+			&= (\sim 11111110 + 1) \% 2^8 \\
 			& = 11111111 \% 2^8 \\
 			& = 11111111 \\
 			& = 2^8-1 < 2^8 
@@ -2017,6 +2019,167 @@
 		\item Ausnahmeregel: für $\gg$ bei negativen Zahlen Compilerabhängig, meist wird links ein Bit reingeschrieben, damit Zahl negativ bleibt $\Rightarrow$ es gilt immer noch $x \gg h = \lfloor x/2^k\rfloor$
 	\end{itemize}
 
+\subsection{reelle Zahlen $\mathbb{R}$}
 
+Problem: unendlich viele Zahlen \\
+Lösung in $C++$
+	\begin{tabular} {c|c|c|c|c}
+		Name & Größe & Bereich & kleinste & Literale\\ \hline
+		float & $32$ Bit & $-10^{-38}$ \dots $10^{38}$ & $10^{-38}$ & $4.0f$ \\
+		double & $64$ Bit & $-10^{308}$ \dots $10^{308}$ & $10^{-308}$ & $4.0$ \\
+		long double &  &  &  & \\
+	\end{tabular}
+	\begin{itemize}
+	\item der $C++$ Standard legt Größe nicht fest, aber alle gängigen CPUs benutzen Standard $IEEE 754$ \\
+	$C++$ übernimmt Hardware-Implementation
+	\item Ziele bei Definition von reellwertigen Zahlen:
+	\begin{itemize}
+		\item hohe Genauigkeit (viele gültige Nachkommastellen)
+		\item a
+	\end{itemize}
+	\item elegante Lösung: halb-logarithmische Darstellung (``floating-point'') \\
+	Datentyp ist aus rein natürlichen Zahlen zusammengesetzt (aber alles von CPU gekapselt)
+	\begin{enumerate}
+		\item $S$ (1-bit): Vorzeichen ($0 \approxeq +, \quad 1 \approxeq -$)
+		\item $M$ (m-bits): Mantisse: Nachkommastellen
+		\item $E$ (e-bits, Basis $b$): Exponent/Größenordnung
+	\end{enumerate}
+	\item die eigentliche Zahl wird berechnet durch: \\
+		$x = (-1)^s \cdot (1+M \cdot 2^{-m}) \cdot 2^{E-b}$
+	\end{itemize}
+	\begin{tabular} {c|c|c|c}
+		x & $M \cdot 2^{-m}$ & $E-b$ & effektive Darstellung \\ \hline
+		$1$ & $0$ & $0$ & $1 \cdot 2^0 $ \\
+		$2$ & $0$ & $1$ & $1 \cdot 2^1 $ \\
+		$3$ & $0.5$ & $1$ & $1.5 \cdot 2^1 $ \\
+		$4$ & $0$ & $2$ & $1 \cdot 2^2 $\\
+		$5$ & $0.25$ & $2$ & $1.25 \cdot 2^2 $ \\
+	\end{tabular}
+
+	\paragraph{Konsequenz}
+	alle ganzen Zahlen zwischen $-2^m + \dots + 2^m $ können exakt dargestellt werden und exakte Arithmetik
+
+	\paragraph{Werte für $m,e,b$ ($IEEE 754$)}
+	\begin{itemize}
+		\item float: $m=23, e=8, b=127$ \\
+		$2^{E-b} \in [2^{-126}, 2^{127}] \approxeq [10^{-38}, 10^{38}] $
+		\item double: $m=52, e=11, b=1023$ \\
+		$2^{E-b} \in [2^{-1022}, 2^{1023}] \approxeq [10^{-308}, 10^{308}] $
+	\end{itemize}
+
+	\paragraph{Anzahl Nachkommastellen}
+	\begin{itemize}
+		\item allgemein: $2^{-m} $
+		\item float: $2^{-23} \approxeq 10^{-7} $
+		\item double: $2^{-52} \approxeq 2 \cdot 10^{-16} $
+	\end{itemize}
+
+	\begin{itemize}
+		\item $\varepsilon = 2^{-m} =$ machine epsilon, unit last place (ULP)
+		\item $\varepsilon $ ist die kleinste Zahl, so dass $(1.0 \cdot \varepsilon)! = 1.0 $, weil Nachkommastellen außerhalb der Mantisse (rechts von $2^{-m} $) ignoriert werden \\
+		$\Rightarrow $ Problem der Auslöschung von signifikanten Stllen: wenn man zwei fast gleich große Zahlen substrahiert, löschen sich fast alle Bits de Mantisse $\Rightarrow $ nur wenige gültige Nachkommastellen überleben
+		\item Bsp 1: $0.1234567 - 0.1234566 = 0.0000001$ (eine gültige Nachkommastelle)
+		\item Bsp 2: $10-\cos(x)$ für kleine $x$: \\
+		für $x \approxeq 0 $ ist $\cos(x) \approxeq 1 \Rightarrow $ Auslöschung
+		\begin{tabular} {c|c|c}
+        	x & $\#$ gültige Stellen & Additionstheorem\\ \hline
+        	$0.0001$ & $9$ (statt $15.5$) & $15.5 $\\
+        	$10^{-8} $ & $0$ ($\cos(10^{-8}) = 1$) & $15.5$
+		\end{tabular} 
+		Additionstheorem: $1-\cos(x) = 2 (\sin(x/2.0))^2 $ \\
+		\item Bsp 3: quadratische Gleichung $ax^2 + by + c $ mit $b>0$ \\
+		$x_1 = \frac{1}{2a} (-b + \sqrt{b^2 - 4ac}) $ falls $a \cdot c > 0\,, \, b^2 \gg 4ac $ \\
+		Umstellen: $x_1 = \frac{1}{2a} (-b + \sqrt{b^2 - 4ac}) \frac{-b - \sqrt{b^2 - 4ac}}{-b - \sqrt{b^2 - 4ac}} $ \\
+		$\approx  -b + b + \varepsilon \approx 0 \Rightarrow $ Auslöschung, wenig gültige Stellen \\
+		$\frac{1}{2a} \frac{b^2 - (b^2 - 4ac)}{-b - \sqrt{b^2 - 4ac}} = \frac{2c}{-(b+\sqrt{b^2-4ac})}$
+		\item Ausnahmeregeln (spezielle Werte)
+		\begin{itemize}
+			\item normal: $E \in [1 \dots 2^e-2] $
+			\item $E = 2^e-1 $ (größtmöglicher Wert): \\
+			für $M=0:$ $x = \pm \infty $ (abhäng. von $S$) \\
+			für $M>0:$ $x=$ NaN (``Not a Number'')
+			\item $E=0$ (kleinster Wert): \\
+			für $M=0: \, \pm 0$ (abhäng. von $S$) \\
+			für $M>0: $ ``denormalisierte Zahlen'' für sehr kleine Werte
+		\end{itemize}
+	\end{itemize}
+
+
+	\section{Buchstabenzeichen}
+	``glyphs'' müssen durch Zahlen repräsentiert werden: ``Zeichencode''
+
+	\paragraph{Geschichte}
+	\begin{itemize}
+		\item 1963: ASCII (7-bit) Zeichen der engl. Schreibmaschine (\underline{keine} Umlaute)
+		\item 1964-2000: 8-bit codes mit Umlauten, Akzenten, kyrillisch \\
+		\underline{aber} 8-bit sind zu wenig, um alles abzudecken \\
+		$\Rightarrow$ viele konkurrierende 8-bit Codes
+		\item 1991-heute: Unicode \\
+		anfangs 16-bit, jetzt $\approx$ 21-bit \\
+		$\Leftarrow $ alles (chinesisch, Emojis, Hyroglyphen)
+	\end{itemize}
+
+	\paragraph{Unicode}
+	$3$ Codierungen für Unicode:
+	\begin{enumerate}
+		\item UTF-8: variable length code (pro glyph $1 \dots 4 uint8\_t$)
+		\item UTF-16: variable length code (pro glyph $1 \dots 2 uint16\_t$)
+		\item UTF-32: fixed length code (pro glyph $1 uint32\_t$)
+	\end{enumerate}
+	\begin{itemize}
+		\item char: 8-bit Codes
+		\item wchar\_t: 16-bit (Windows), 32-bit (Linux)
+		\item $u16char\_t$
+		\item $u32int\_t$
+	\end{itemize}
+	leider sehr plattformabhängig $\Rightarrow $ Zeichensalat, wenn inkompatible Codes verwendet werden \\
+	$\Rightarrow $ in $C++$ ICU library (``International Components for Unicode'')
+	
+	\begin{itemize}
+		\item hat man alle Zeichen korrekt, ist Problem noch nicht gelöst: alphabetische Sortierung sprachabhängig \\
+		ä: dt. Wörterbuch - wie a; dt. Telefonbuch - wie ae
+		\item Lösung in $C++$: 
+		\begin{lstlisting}
+			std::sort(v.begin(), v.end(), std::locale(``se_SE.UTF-8'')) mit <locale>, <codecrt>
+		\end{lstlisting}
+	\end{itemize}
+
+	\subsection{eigene Datentypen}
+	$3$ Möglichkeiten:
+	\begin{itemize}
+		\item $enum$: Aufzählungstypen $\Rightarrow $ Selbststudium
+		\item $struct$: strukturierte Daten, zusammengesetzte Typen
+		\item $class$: wie $struct$ auf objekt-orientiert
+	\end{itemize}
+
+	\begin{lstlisting}
+		struct Typevalue {
+			type_name var_name1;
+			type_name var_name2;
+			...
+		};
+	\end{lstlisting}
+	Beispiel:
+	\begin{lstlisting}
+		struct Date {
+			int day;
+			int month;
+			int year;
+		};  // Datenmember = member variables 
+
+		Date caster (int year) {
+			... // Osterdaten
+			Date res;
+			res.day = day;
+			res.month = month;
+		}
+
+		// für Übungsaufgabe 8.4
+		struct Character {
+			wchar_t clear;
+			wchar_t encrypted;
+			int count;
+		};
+	\end{lstlisting}
 
 \end{document}
