@@ -9,12 +9,13 @@
 \usepackage{ngerman}
 \usepackage{pgf}
 \usepackage{listings}
+\usepackage{graphicx}
+\graphicspath{ {Bilder/} }
 
 \usepackage{tikz}
 \usetikzlibrary{arrows, automata}
 \usetikzlibrary{positioning}
 
-\usepackage{listings}
 \usepackage{color}
 
 \usepackage{hyperref}
@@ -2181,5 +2182,287 @@ Lösung in $C++$
 			int count;
 		};
 	\end{lstlisting}
+
+
+\section{objektorientierte Programmierung}
+
+\subsection{eigene Datentypen mit Kappselung}
+
+	\begin{itemize}
+		\item eigene Datentypen sind zusammengesetzt aus einfacheren/existierenden Datentypen (Ausnahme enum)
+		\item zwei Arten:
+		\begin{itemize}
+			\item offene Typen: Benutzer kann auf interne Daten zugreifen, ``C-style types'' (wichtige Änderungen aus Standardbibliothek aus C übernommen)
+			\item gekapselte Typen: Benutzer kann nicht auf interne Daten zugreifen (``private'') \\
+			alle Benutzerzugriffe über ein öffentliches Interface (``public'') \\
+			Vorteile:
+			\begin{enumerate}
+				\item komplexe Details zur Verwaltung bleiben verborgen
+				\item öffentliches Interface (hoffentlich) einfach zu benutzen \\
+				z.B. $std::vector$
+				\item interne Details können bei Bedarf geändert werden, ohne dass sich das öffentliche Interface ändert \\
+				$\Rightarrow$ Benutzer muss Code nicht ändern, aber Programm geht schneller \\
+				``Rückwärtskompatibilität''
+			\end{enumerate}
+		\end{itemize}
+	\end{itemize}
+	\paragraph{Wie erreicht man die Kappselung?}
+	\begin{itemize}
+		\item zwei Schlüsselwörter für eigene Typen: 
+		\begin{enumerate}
+			\item $class$ (Konvention in OOP)
+			\item $struct$ (von C übernommen)
+		\end{enumerate}
+		\item zwei Schlüsselwörter für die Kappselung:
+		\begin{enumerate}
+			\item $public$ (öffentlicher Teil)
+			\item $private$ (gekappselter Teil)
+		\end{enumerate}
+		$class$ ist standardmäßig ``private'', $struct$ ist ``public''
+		\begin{lstlisting}
+			class MyType {
+				... // private by default
+				public:
+				...  // jetzt oeffentlich
+				private:
+				...  // jetzt privat
+			};
+
+			struct MyType {
+				...  // oeffentlich by default
+				private:
+				...  // jetzt privat
+				public:
+				...  // jetzt wieder oeffentlich
+			};
+		\end{lstlisting}
+		$\Rightarrow $ Benutzer können nur auf Funktionalität im $public$-Teil zugreifen
+		\item die im zusammengesetzten Typ enthaltenen Daten heißen ``member variables'' und sind normalerweise $private$ 
+		\begin{itemize}
+			\item kann nachträglich geändert werden \\
+			z.B. complex in real/imaginär $\rightarrow $ Phase/Betrag
+			\item Benutzer kann nicht unbeabsichtigt die Konsistenz verletzen
+		\end{itemize}
+	\end{itemize}
+	\section{running example}
+	  Punkt-Klasse für 2-dimensionalen Punkt
+
+	 \begin{lstlisting}
+	  	class Point {
+	  		double x_;  // Koordinate als private
+	  		double y_;  // Datenmember (``_'' am Ende)
+	  	};
+	 \end{lstlisting}
+	  $\Rightarrow $ dieser Datentyp ist unbenutzbar, weil alles privat
+
+	 \begin{itemize}
+	  	\item unverzichtbare öffentliche Funktion zum Initialisieren des Speichers: ``Konstruktoren''
+	  	\item Prozeduren innerhalb der klasse, Name gleich Äquivalenzklasse
+	  	\begin{itemize}
+	  		\item Prozeduren sind $void$, $void$ wird weggelassen
+	  		\item nur Seiteneffekt: neue Objekte initialisieren, also die Konstruktoren der Datenmember aufrufen
+	  	\end{itemize}
+	  	\item zur Erinnerung: zwei Möglichkeiten für normale Variableninitialisierung:
+	  	\begin{itemize}
+	  		\item $double \, z=1.0;$
+	  		\item $double z(1.0)$ - nur diese Syntax ist in Konstruktoren erlaubt
+	  	\end{itemize}
+	 \end{itemize}
+
+	 \begin{lstlisting}
+	  	class Point {
+	  		double x_,
+	  		double y_;
+
+	  		public:
+	  			Point(double x, double y)  // Konstruktoraufrufe vor Prozedurrumpf
+	  				: x_(x)  // Member x_ auf Initialwert x
+	  				, y_(y)  // Member y_ auf Initialwert y
+	  			{
+	  			  // normaler Rumpf der Prozedur, hier leer
+	  			}
+	  	};
+
+	  	Point p(1.0, 2.0);
+	  	Point q = {3.0, 4.0};
+	 \end{lstlisting}
+
+	 \paragraph{Standardkonstruktor}
+	 $\approxeq$ Konstruktor ohne Argumente
+	 \begin{itemize}
+	 	\item initialisiert Objekt in Standardzustand
+	 	\item bei Zahlen: auf $0$ setzen, hier auf Koordinatenursprung
+	 \end{itemize}
+	 \begin{lstlisting}
+	 	class Point {
+	 		...  // wie zuvor
+	 		Point()  // Standardkonstruktor
+	 		: x_(0.0)
+	 		, y_(0.0)
+	 		{}
+	 	};
+	 \end{lstlisting}
+	 \begin{itemize}
+	 	\item um mit Punkt-Objekten zu arbeiten, brauchen wir weitere Funktionen:
+	 	\begin{enumerate}
+	 		\item Member-Funktionen: innerhalb der Klasse definiert man (wie Konstruktoren), können auf alles private zugreifen, können als $private$ oder $public$ definiert werden
+	 		\item freie Funktionen: normale Funktionen außerhalb der Klasse, die ein Argument des neuen Typs haben können nur auf öffentliches Interface zugreifen
+	 	\end{enumerate}
+	 	\item wichtigste Vertreter der Member-Functions: Zugriffsfunktionen ``Getter'': erlauben Benutzer, aktuellen Zustand abzufragen (z.B. $v.size()$)
+	 \end{itemize}
+	 \begin{lstlisting}
+	 	Point p(1.0, 2.0);
+	 	p.x()  // returns 1.0 (x-Koordinate)
+	 	p.y()  // returns 2.0 (y-Koordinate)
+	 \end{lstlisting}
+	 \begin{itemize}
+	 	\item Member-Funktionen werden mit Punkt-Syntax aufgerufen: $p.x()$ \\
+	 	Objekt vor dem Punkt ist das ``nullte'' Argument der Funktion $\Rightarrow $ Compiler macht daraus $x(p)$
+	 	\item bei der Implementation der Member-Funktion schreibt man ``nullte'' Argument nicht hin, der Compiler stellt es automatisch unter dem Namen $*this$ zur Verfügung
+	 \end{itemize}
+
+	 \begin{lstlisting}
+	 	class Point {
+	 		...  // wie vorher
+
+	 		double x() {
+	 			return (*this).x_;
+	 		}
+	 		dobule y() {
+	 			return (*this).y_;
+	 		}
+	 	}
+	 \end{lstlisting}
+
+	 \begin{itemize}
+	 	\item meist kann man $(*this).$ weggelassen werden, wenn eindeutig ist, welchen Member man meint, fügt der Compiler es automatisch ein
+	 	\item Getter-Funktionen sind ``read-only'' (ändern die Member-Variablen nicht) \\
+	 	man sollte sie deshalb mittels $const$ explizit als ``read-only'' markieren \\ Vorteile:
+	 	\begin{enumerate}
+	 		\item Programmierer kann Member-Variable nicht irrtümlich ändern
+	 		\item Funktion kann auch in Kontexten benutzt werden, wo das Objekt (nulltes Argument) explizit als ``read-only'' markiert ist
+	 	\end{enumerate}
+	 	$Point \, const \, cp(1.0,2.0);$
+	 \end{itemize}
+
+\subsection{Punkte ausgeben}
+
+	\begin{itemize}
+		\item zwei Möglichkeiten:
+		\begin{itemize}
+			\item Member-Funktion:
+			\begin{lstlisting}
+				std::cout << p.to_string() << ``\n'';
+			\end{lstlisting}
+			\item freie Funktion:
+			\begin{lstlisting}
+				std::cout << to_string(p) << ``\n'';
+			\end{lstlisting}
+		\end{itemize}
+		\begin{lstlisting}
+			class Point {  // Member-Funktion
+			...  // wie vorher
+
+				std::string to_string() const {
+					std::string res;
+					res += ``['' + std::to_string((*this).x()) + ``,'' + std::to_string((*this).y()) + ``]'';
+					return res;
+				}
+			};
+
+			// oder
+			std::string to_string() const {  // freie Funktion
+					std::string res;
+					res += ``['' + std::to_string(p.x()) + ``,'' + std::to_string(p.y()) + ``]'';
+					return res;
+			}
+		\end{lstlisting}
+		ws man wählt, ist Geschmackssache (freie Funktion ist kompatibel zu $std::to\_string$)
+	\end{itemize}
+
+\subsection{Punkte vergleichen}
+
+	\begin{lstlisting}
+		class Point {
+			...  // wie vorher
+
+			bool equals (Point other) const {
+			    return (*this).x() == other.x() && (*this).y() == other.y();
+			}
+		};
+
+		// andere Umgebung
+		Point p(1.0, 2.0);
+		Point origin;
+		assert(p.equals(p));
+		assert(!p.equals(origin));
+	\end{lstlisting}
+
+		üblicher: Infix-Notation $\Rightarrow $ dazu Prefix-Variante $operator ==$ implementieren
+	\begin{lstlisting}
+		class Point {
+			...  // wie vorher
+
+			bool equals (Point other) const {
+			    return (*this).x() == other.x() && (*this).y() == other.y();
+			}
+			bool operator== (Point other) const {
+				return (*this).x() == other.x() && (*this),y() == other.y();
+			}
+			bool operator!= (Point other) const {
+				return (*this).x() != other.x() || (*this),y() != other.y();
+			}
+		};
+
+		// andere Umgebung
+		Point p(1.0, 2.0);
+		Point origin;
+		assert(p == p);
+		assert(!(p == origin));
+		assert(p != origin);
+	\end{lstlisting}
+
+\subsection{neuen Punkt erzeugen}
+	transponiert, d.h. x-y Koordinaten sind vertauscht
+	\begin{lstlisting}
+		Point p(1.0, 2.0);
+		Point tp = p.transpose();  // unser Ziel
+	
+		class Point {
+			...  // wie vorher
+
+			Point transpose() const {
+				Point res((*this).y(), (*this).x());
+				return res;
+			}
+		};
+	\end{lstlisting}
+	verschoben
+	\begin{lstlisting}
+		Point p(1.0, 2.0);
+		Point v (3.0, 4.0);
+		Point vp = p.translate(v);  // unser Ziel
+	
+		class Point {
+			...  // wie vorher
+
+			Point translate(Point v) const {
+				Point res((*this).x() + v.x(), (*this).y() + v.y());
+				return res;
+			}
+		};
+	\end{lstlisting}
+
+
+
+
+
+% Bild einfügen
+\begin{figure} [h]
+	\centering
+	\includegraphics[scale=0.25]{binrer-weihnachtsbaum}
+	\caption*{Frohe Weihnachten und einen guten Rutsch!}
+\end{figure}
+
 
 \end{document}
