@@ -679,7 +679,7 @@
 			\item eigene Typen: vom Programmierer selbst implementiert
 		\end{itemize}
 		\item durch "'objekt-orientierte Programmierung"' erreicht man, dass zusammengesetzte Typen genauso einfach, bequem und effizient sind, wie Basistypen
-		\item "'Kappselung"': die interne Strukter und Implementation ist für den Benutzer unsichtbar
+		\item "'Kapselung"': die interne Strukter und Implementation ist für den Benutzer unsichtbar
 		\item Benutzer manipuliert Speicher über Funktionen ("'member functions"') $\approx$ Schnittstelle des Typs Interface \\
 		\begin{lstlisting} [tabsize = 2]
 			zusammenges_typ_name    var_name = initial-wert;  // init
@@ -691,7 +691,7 @@
 \begin{itemize}
 	\item zwei Datentypen in $C++$
 	\item klassischer C-String: \textit{char}[] ("'character array"')
-	\item $C++$-String: \textit{std::string} - gekappselt und bequem
+	\item $C++$-String: \textit{std::string} - gekapselt und bequem
 	\item String-Literale: "'Zeichenkette"'
 	\item einzelnes Zeichen: 'z' \\
 		Vorsicht: die String-Literale sind C-Strings(gibt keine $C++$ String-Literale)
@@ -2184,9 +2184,9 @@ Lösung in $C++$
 	\end{lstlisting}
 
 
-\section{objektorientierte Programmierung}
+\section{Objektorientierte Programmierung}
 
-\subsection{eigene Datentypen mit Kappselung}
+\subsection{eigene Datentypen mit Kapselung}
 
 	\begin{itemize}
 		\item eigene Datentypen sind zusammengesetzt aus einfacheren/existierenden Datentypen (Ausnahme enum)
@@ -2206,17 +2206,17 @@ Lösung in $C++$
 			\end{enumerate}
 		\end{itemize}
 	\end{itemize}
-	\paragraph{Wie erreicht man die Kappselung?}
+	\paragraph{Wie erreicht man die Kapselung?}
 	\begin{itemize}
 		\item zwei Schlüsselwörter für eigene Typen: 
 		\begin{enumerate}
 			\item $class$ (Konvention in OOP)
 			\item $struct$ (von C übernommen)
 		\end{enumerate}
-		\item zwei Schlüsselwörter für die Kappselung:
+		\item zwei Schlüsselwörter für die Kapselung:
 		\begin{enumerate}
 			\item $public$ (öffentlicher Teil)
-			\item $private$ (gekappselter Teil)
+			\item $private$ (gekapselter Teil)
 		\end{enumerate}
 		$class$ ist standardmäßig ``private'', $struct$ ist ``public''
 		\begin{lstlisting}
@@ -2328,7 +2328,7 @@ Lösung in $C++$
 	 		double x() {
 	 			return (*this).x_;
 	 		}
-	 		dobule y() {
+	 		double y() {
 	 			return (*this).y_;
 	 		}
 	 	}
@@ -2453,16 +2453,136 @@ Lösung in $C++$
 		};
 	\end{lstlisting}
 
+\section{Member-Funktionen}
+	Jede Klasse hat bestimmte \underline{spezielle Member-Funktionen}:
+	\begin{itemize}
+		\item Konstruktor: bringt Objekt in wohldefinierten Anfangszustand
+		\item Destruktor: entsorgt nicht mehr benötigtes Objekt (typischerweise am Ende der Umgebung)
+		\item Zuweisungsoperatoren: um Objekte per Zuweisung (``='') zu übers
+	\end{itemize}
+
+\subsection{Destruktor}
+	Jede Klasse muss \underline{genau einen} haben, wenn der Programmierer das nicht explizit implementiert, fügt Compiler ihn automatisch ein
+	\begin{lstlisting}
+		class Klassenname {
+			public:
+			~Klassenname() {
+				... Implementation
+			}
+		}
+	\end{lstlisting}
+
+	\begin{itemize}
+		\item der automatisierte Destruktor ruft einfach die Destruktoren aller Member-Variablen auf
+		\item meist ist das ausreichend, aber in bestimmten Situationen muss der Programmierer zusätzliche Aktionen implementieren
+		\item Beispiele:
+		\begin{enumerate}
+			\item manuelle Speicherverwaltung: Destruktor muss nicht mehr benötigten Speicher an Betriebssystem zurückgeben (z.B. Destruktor von $std::vector$) \\
+			Vorteil der Kapselung: Nutzer merkt davon nichts
+			\item manuelles Dateimanagement: Destruktor muss Datei schließen (=Daten aus dem Cache auf die Platte übertragen)
+			\item Abmelden von einem Service (Ausloggen, Verbindung beenden)
+		\end{enumerate}
+		\item spezieller Konstruktor:
+	\end{itemize}
+\subsection{Kopier-Konstruktor} 
+		zum Erzeugen einer Kopie eines vorhandenen Objekts, d.h. neue Speicherzelle mit gleichem Inhalt:
+		\begin{lstlisting}
+			Point p (1.0, 2.0);  // Konstruktor mit Initialwert
+			Point q = p;  // Kopierkonstruktor
+			Point r(p);  // Kopierkonstruktor
+
+			int foo (Point q) {
+				...
+			} 
+			foo(p)  // Kopierkonstruktor wegen pass-by-value
+
+			int bar (Point const & q) {
+			    ...
+			}
+			bar(p);  // q ist neuer Name für p ohne neue Speicherzelle
+		\end{lstlisting}
+		\begin{lstlisting}
+			class KlassenName{
+				public:
+					KlassenName (KlassenName const & existing) {
+					    ...
+					}
+			}
+		\end{lstlisting}
+		\begin{itemize}
+			\item der Compiler erzeugt Kopier-Konstruktor automatisch, falls nicht explizit programmiert (= ruft Kopier.Konstruktor für alle Member-Variablen auf) \\
+			meistens richtig, Ausnahmen wie oben
+		\end{itemize}
+\subsection{Standard-Konstruktor}
+	(``default constructor'')
+	\begin{itemize}
+		\item ohne Argumente
+		\item bringt Objekt in Standard-Zustand, z.B. $0$ bei Zahlen
+		\begin{lstlisting}
+			class KlassenName {
+			    public: 
+			 		KlassenName() {
+			 		    ...
+			 		}   
+			}
+		\end{lstlisting}
+		\item Compiler erzeugt Standard-Konstruktor automatisch, falls es \underline{keinen} benutzerdefinierten Konstruktor gibt
+		\item ``rule-of-three'': Wenn es nötig ist, einen der drei Funktionen (Destruktor, Kopier-Konstruktor und Zuweisungskonstruktor) explizit zu implementiern, müssen alle drei explizit implementiert werden
+	\end{itemize}
+
+\section{Vorteile der Kapselung}
+	\begin{itemize}
+		\item Benutzung der Klasse ist viel einfacher, weil unwichtige Details verborgen sind
+		\item interne Implementation kann geändert werden, ohne den Benutzer zu Folgeänderungen zu zwingen, weil externe Schnittstelle erhalten bleibt
+	\end{itemize}
+\subsection{Beispiel: Point-Klasse}
+	\begin{lstlisting}
+		class Point {
+		    double x_, y_;
+
+		    public:
+		 		Point()
+		 		: x_(0.0)
+		 		, y_(0.0) {} 
+
+		 		Point(double x, double y)
+		 		: x_(x)
+		 		, y_(y) {}
+
+		 		double x() const {
+		 			return x_;  // = return (*this).x_;
+		 		}
+
+		 		double y() const {
+		 			return y_;
+		 		}
+		}
+
+		Alternative: Array Länge 2:
+		#include <array>
+		std::array<double, 2>  // feste Größe
+
+		class Point {
+		    std::array<double, 2> data_;
+
+		    public:
+		    	Point()
+		    	: data_{0.0, 0.0} {}
+
+		    	Point (double x, double y)
+		    	: data_{x, y} {}
+
+		    	double x() const {
+		    		return data_[0];
+		    	}
+
+		    	double y() const {
+		    		return data_[1];
+		    	}
+		}
+	\end{lstlisting}
 
 
-
-
-% Bild einfügen
-\begin{figure} [h]
-	\centering
-	\includegraphics[scale=0.25]{binrer-weihnachtsbaum}
-	\caption*{Frohe Weihnachten und einen guten Rutsch!}
-\end{figure}
 
 
 \end{document}
