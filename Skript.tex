@@ -13,7 +13,7 @@
 \graphicspath{ {Bilder/} }
 
 \usepackage{tikz}
-\usetikzlibrary{arrows, automata}
+\usetikzlibrary{arrows, automata, matrix}
 \usetikzlibrary{positioning}
 
 \usepackage{color}
@@ -1244,11 +1244,9 @@
 		\item Bei $std::map$ liefern die Iteratoren die Elemente in aufsteigender Reihenfolge der Schlüssel (Unterschied zu $std::unordered\_map$)
 	\end{itemize}
 	
-<<<<<<< HEAD
 	\subsection{Die Funktion $std::transform()$}
-=======
+
 	\paragraph{Die Funktion $std::transform()$}
->>>>>>> 19bbfc961301f88d1291a395c8d091764c4b0c56
 	
 	\begin{itemize}
 		\item $std::transform()$ erlaubt, die Daten "'on-the-fly"' zu ändern \\
@@ -1281,8 +1279,6 @@
 		
 		\item der Argumenttyp der Funktion muss mit dem $source$-Elementtyp kompatibel sein
 		\item der Argumenttyp der Funktion muss mit dem $target$-Elementtyp kompatibel sein
-<<<<<<< HEAD
-=======
 	
 	\item Das letzte Argument von $std::transform()$ muss ein Funktor sein ($\approxeq$ verhält sich wie eine Funktion) \\
 	Dazu gibt es drei Varianten:
@@ -2244,7 +2240,7 @@ Lösung in $C++$
 			\item Benutzer kann nicht unbeabsichtigt die Konsistenz verletzen
 		\end{itemize}
 	\end{itemize}
-	\section{running example}
+\subsection{running example}
 	  Punkt-Klasse für 2-dimensionalen Punkt
 
 	 \begin{lstlisting}
@@ -2287,7 +2283,7 @@ Lösung in $C++$
 	  	Point q = {3.0, 4.0};
 	 \end{lstlisting}
 
-	 \paragraph{Standardkonstruktor}
+\paragraph{Standardkonstruktor}
 	 $\approxeq$ Konstruktor ohne Argumente
 	 \begin{itemize}
 	 	\item initialisiert Objekt in Standardzustand
@@ -2345,7 +2341,7 @@ Lösung in $C++$
 	 	$Point \, const \, cp(1.0,2.0);$
 	 \end{itemize}
 
-\subsection{Punkte ausgeben}
+\paragraph{Punkte ausgeben}
 
 	\begin{itemize}
 		\item zwei Möglichkeiten:
@@ -2380,7 +2376,7 @@ Lösung in $C++$
 		ws man wählt, ist Geschmackssache (freie Funktion ist kompatibel zu $std::to\_string$)
 	\end{itemize}
 
-\subsection{Punkte vergleichen}
+\paragraph{Punkte vergleichen}
 
 	\begin{lstlisting}
 		class Point {
@@ -2422,7 +2418,7 @@ Lösung in $C++$
 		assert(p != origin);
 	\end{lstlisting}
 
-\subsection{neuen Punkt erzeugen}
+\paragraph{neuen Punkt erzeugen}
 	transponiert, d.h. x-y Koordinaten sind vertauscht
 	\begin{lstlisting}
 		Point p(1.0, 2.0);
@@ -2453,7 +2449,7 @@ Lösung in $C++$
 		};
 	\end{lstlisting}
 
-\section{Member-Funktionen}
+\subsection{Member-Funktionen}
 	Jede Klasse hat bestimmte \underline{spezielle Member-Funktionen}:
 	\begin{itemize}
 		\item Konstruktor: bringt Objekt in wohldefinierten Anfangszustand
@@ -2461,7 +2457,7 @@ Lösung in $C++$
 		\item Zuweisungsoperatoren: um Objekte per Zuweisung (``='') zu übers
 	\end{itemize}
 
-\subsection{Destruktor}
+\paragraph{Destruktor}
 	Jede Klasse muss \underline{genau einen} haben, wenn der Programmierer das nicht explizit implementiert, fügt Compiler ihn automatisch ein
 	\begin{lstlisting}
 		class Klassenname {
@@ -2469,7 +2465,7 @@ Lösung in $C++$
 			~Klassenname() {
 				... Implementation
 			}
-		}
+		};
 	\end{lstlisting}
 
 	\begin{itemize}
@@ -2484,7 +2480,7 @@ Lösung in $C++$
 		\end{enumerate}
 		\item spezieller Konstruktor:
 	\end{itemize}
-\subsection{Kopier-Konstruktor} 
+\paragraph{Kopier-Konstruktor} 
 		zum Erzeugen einer Kopie eines vorhandenen Objekts, d.h. neue Speicherzelle mit gleichem Inhalt:
 		\begin{lstlisting}
 			Point p (1.0, 2.0);  // Konstruktor mit Initialwert
@@ -2507,13 +2503,13 @@ Lösung in $C++$
 					KlassenName (KlassenName const & existing) {
 					    ...
 					}
-			}
+			};
 		\end{lstlisting}
 		\begin{itemize}
 			\item der Compiler erzeugt Kopier-Konstruktor automatisch, falls nicht explizit programmiert (= ruft Kopier.Konstruktor für alle Member-Variablen auf) \\
 			meistens richtig, Ausnahmen wie oben
 		\end{itemize}
-\subsection{Standard-Konstruktor}
+\paragraph{Standard-Konstruktor}
 	(``default constructor'')
 	\begin{itemize}
 		\item ohne Argumente
@@ -2524,18 +2520,18 @@ Lösung in $C++$
 			 		KlassenName() {
 			 		    ...
 			 		}   
-			}
+			};
 		\end{lstlisting}
 		\item Compiler erzeugt Standard-Konstruktor automatisch, falls es \underline{keinen} benutzerdefinierten Konstruktor gibt
 		\item ``rule-of-three'': Wenn es nötig ist, einen der drei Funktionen (Destruktor, Kopier-Konstruktor und Zuweisungskonstruktor) explizit zu implementiern, müssen alle drei explizit implementiert werden
 	\end{itemize}
 
-\section{Vorteile der Kapselung}
+\subsection{Vorteile der Kapselung}
 	\begin{itemize}
 		\item Benutzung der Klasse ist viel einfacher, weil unwichtige Details verborgen sind
 		\item interne Implementation kann geändert werden, ohne den Benutzer zu Folgeänderungen zu zwingen, weil externe Schnittstelle erhalten bleibt
 	\end{itemize}
-\subsection{Beispiel: Point-Klasse}
+\paragraph{Beispiel: Point-Klasse}
 	\begin{lstlisting}
 		class Point {
 		    double x_, y_;
@@ -2556,7 +2552,7 @@ Lösung in $C++$
 		 		double y() const {
 		 			return y_;
 		 		}
-		}
+		};
 
 		Alternative: Array Länge 2:
 		#include <array>
@@ -2579,10 +2575,286 @@ Lösung in $C++$
 		    	double y() const {
 		    		return data_[1];
 		    	}
-		}
+		};
 	\end{lstlisting}
 
+\subsection{Operatoren}
+\paragraph{Ziel der Objektorientierten Programmierung}
 
+Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eingebauten (z.B. arithmetische Infix-Operationen)
+	\begin{lstlisting}
+		Point p(2.0, 3.0), q(4.0, 5.0)
+		Point r = 2.5*p + q;
+		assert(r == Point(9.0, 12.5));
+	\end{lstlisting}
+	\begin{itemize}
+		\item dazu muss man die entsprechenden Prefix-Funktionen implementieren 
+		\item Addition:
+		\begin{lstlisting}
+			Point operator + (Point p1, Point p2) {
+				Point res (p1.x() + p2.x(), p1.y() + p2.y());
+				return res;
+			}
+
+			// Alternative
+			Point operator + (Point cconst & p1, Point const & p2) {
+				...  // wie zuvor
+			}
+		\end{lstlisting} 
+		\item Subtraktion, elementweise Multiplikation und Division genauso (``$+$'' überall durch ``$+$'', ``$*$'', ``$-$'' ersetzen)
+		\item Skalierungsoperation: Multiplikation von Punkt mit Zahl, d.h. zwei verschiedene Argumenttypen (zwei Versionen für Kommutativität)
+		\begin{lstlisting}
+			Point operator * (double s, Point p) {
+				Point res (s * p.x(), s * p.y());
+				return res;
+			}
+			// und 
+			Point operator * (Point p, double s) {
+				Point res (p.x() * s, p.y() * s);
+				return res;
+			}
+		\end{lstlisting}
+		\item alle diese Versionen können dank ``function-overloading'' gleichzeitig implementiert sein
+		\item bisher: freie Funktionen
+		\item falls das erste Argument vom Typ Point oder Point const \& ist, kann man die Funktionen alternativ als Member-Funktion implementieren
+		\begin{lstlisting}
+			class Point {
+				...  // wie bisher
+				Point operator + (Point const & p2) {
+					Point res ((*this).x() + p2.x(), (*this).x() + p2.y());
+					return res;  // Nulltes Argument anstelle von p2 der freien Funktion
+				}
+			};
+		\end{lstlisting}
+	\end{itemize}
+
+\paragraph*{Member-Funktionen}
+	\begin{itemize}
+		\item Vorteil von Member-Funktionen: Zugriff auf private Member der Klasse (hier nicht notwendig)
+		\item Nachteil: 
+			\begin{enumerate}
+				\item nur möglich, wenn das linke Argument vom Klassentyp ist \\ ($p*s$ kann Member-Funktion sein, $s*p$ nicht)
+				\item nur möglich, wenn man die Klassendefinition ändern darf
+			\end{enumerate}
+	\end{itemize}
+
+\subsection{Objekte nachträglich verändern}
+	\begin{itemize}
+		\item bisher: alle Objekte waren ``write-once'', d-h- Speicher wurde im Konstruktkor initialisiert und war dann unveränderlich \\ $\Rightarrow $ Paradigmen der funktionalen Programmierung - ``referentielle Integrität''
+		\item prozedurale Programmierung erforder Möglichkeit, Objekte zu ändern, z.B. um entsprechende Änderungen in der realen Welt widerzuspiegeln
+		\item dazu 3 Möglichkeiten:
+		\begin{enumerate}
+			\item Setter-Funktionen (universell nutzbar)
+			\begin{lstlisting}
+				class Point {
+					...  // wie zuvor
+					void setX (double new_x) {  // kein const. für Änderung
+						(*this).x_ = new_x;
+					}
+
+					void setY (double new_y) {  // kein const. für Änderung
+						(*this).y_ = new_y;
+					}
+
+					void set (double new_x, double new_y) {
+						(*this).x_ = new_x;
+						(*this).y_ = new_y;
+					}
+				};
+			\end{lstlisting}
+			\item Index-zugriff, wie bei $std::vector$
+			\begin{lstlisting}
+			// wollen:
+				Point p(2.0, 3.0);
+				assert(p[0] == 2.0 && p[1] == 3.0);  // lesender Zugriff
+
+				p[0] = 4.0;
+				p[1] = 5.0;
+				assert(p == Point(4.0, 5.0));  // schreibender Zugriff
+
+				class Point {
+					...  // wie zuvor
+					double operator[] (int index) const {
+						if (index == 0) {
+							return (*this).x_;
+						} if (index == 1) {
+							return (*this).y_;
+						} else {
+							// Fehlermeldung
+						}
+					}  // lesender Zugriff
+
+					double & operator[] (int index) {
+						if (index == 0) {
+							return (*this).x_;
+						} if (index == 1) {
+							return (*this).y_;
+						} else {
+							// Fehlermeldung
+						}
+					}  // schreibender Zugriff
+				};
+
+				// Verwendung (Langform):
+				Point p(2.0, 3.0);
+				double & x = p[0];  
+				double & y = p[1];
+				x = 4.0;  // ändert indirekt auch die Variablen p.x_, p.y_
+				y = 5.0;
+				assert(p == Point(4.0, 5.0));
+			\end{lstlisting}
+			\item Zuweisungsoperatoren
+			\begin{lstlisting}
+			// wollen:
+				Point p(2.0, 3.0), q(4.0, 5.0);
+
+				p = 1.0;
+				assert(p == Point(1.0, 1.0));
+
+				p = q;
+				assert(p == Point(4.0, 5.0));
+
+				Point & r = q;
+
+				class Point {
+					...  // wie zuvor
+					void operator= (double v) {
+						(*this).x_ = v;
+						(*this).y_ = v;
+					}
+
+					void operator= (Point const & other) {
+						(*this).x_ = other.x_;
+						(*this).y_ = other.y_;
+					}  // copy assignment operator
+				};
+			\end{lstlisting}
+		\end{enumerate}
+	\end{itemize}
+
+\paragraph*{Bemerkungen}
+	\begin{itemize}
+		\item implementiert der Programmierer keinen copy assignment Operator, implementiert der Compiler ihn automatisch (wie Kopierkonstruktor): ruft copy assignment für alle Member-Variablen auf
+		\item man implementiert meist:
+		\begin{lstlisting}
+			Point & operator= (...) {
+				... // wie zuvor
+				return *this;
+			}
+		\end{lstlisting}
+		Vorteil: man kann Zuweisungen verketten
+		\item arithmetische Zuweisung:
+		\begin{lstlisting}
+		// wollen:
+			Point p(2.0, 3.0), q(4.0, 5.0);
+			p += q;  // add-assignment
+			assert(p == Point(6.0, 8.0));
+
+			class Point {
+				...  // wie zuvor
+				Point & operator += (Point const & other) {
+					(*this).x_ += other.x_;
+					(*this).y_ += other.y_;
+					return *this;
+				}
+			};
+		\end{lstlisting}
+	\end{itemize}
+
+\section{Klasse: Image}
+	\begin{itemize}
+		\item speichert 2D Bild (analog: Matrix), zunächst nur Graubilder, später Farbbilder
+		\item Beispiel für dynamische Datenstruktur, Größe erst zur Laufzeit bekannt und änderbar
+		\item besteht aus Pixeln (``picture elements''), die mit 2 Indizes x und y angesprochen werden
+		\item Problem: Speicher ist nur 1D \\
+		Lösung: Lege \underline{Zeilen} hintereinander
+	\end{itemize}
+
+	% \begin{tikzpicture}[color=blue]
+	% 	\draw (0,0) rectangle (1,1);
+	% 	\draw (1,0) rectangle (2,1);
+	% 	\draw (2,0) rectangle (3,1);
+	% 	\draw (3,0) rectangle (4,1);
+	% \end{tikzpicture}
+
+	\begin{lstlisting}
+		class Image {
+				int width_, height_;
+				std::vector <uint16_t> data_;
+			public:
+				Image()  //Std-Konstruktor Bildgröße(0,0)
+				:width_(0) 
+				,height_(0)
+				,data_()
+				{}
+
+				Image (unsigned int w, unsigned int u) 
+				:width_(w)
+				,height_(u)
+				,data_(w*h, 0)  // Pixelgröße mit Farbwert schwarz
+
+				int width() const {
+					return width_;
+				}
+
+				int height() const {
+					return height_;
+				}
+
+				int size() const { // Gesamtzahl Pixel
+					return width_ * height_;
+				}
+
+				void resize(unsigned int w, unsigned int h) {
+					data_.resize(w*h);
+					width_ = w;
+					height_ = h;
+				}
+
+				uint16_t get(int x, int y) const {
+					return data_[x + y*width_];
+				}
+
+				void set(int x, int y, uint16_t v) {
+					data_[x + y*width_] = v;
+				}
+		};
+	\end{lstlisting}
+\paragraph*{Zugriff bequemer machen}
+	wünschenswert wäre: 2D Arrays $\Rightarrow $ verwende stattdessen runde Klammern
+	\begin{lstlisting}
+		class Image {
+			... // wie bisher
+			uint16_t operator() (int x, int y) const {
+				return get(x,y);
+			}
+
+			uint16_t & operator() (int x, int y) {
+				return data_[x+y*width_];
+			}
+		};
+
+		// jetzt:
+		uint16_t v = image(1,2);
+		image(1,2) = 255;
+	\end{lstlisting}
+
+\paragraph{Rückgabe als String}
+	\begin{lstlisting}
+		std::string to_string (Image const & image) {
+			std::string res;
+			for (int y=0; y<image.height(), y++) {  // iteriert über die Zeilen
+				for (int x=0; x<image.width(); x++) {  // iteriert über die Spalten
+					if (x>0) {
+						res += `` '';
+					}
+					res += std::to_string(image(x,y));
+				}
+				res += ``\n'';
+			}
+			return res;
+		}
+	\end{lstlisting}
 
 
 \end{document}
