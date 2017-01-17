@@ -2856,5 +2856,141 @@ Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eing
 		}
 	\end{lstlisting}
 
+\paragraph*{Frage zur Verwendung der Klammern}
+	$()$ oder $\{ \}$?
+	\begin{itemize}
+		\item vor $C++11$ gab es nur $()$ oder gar keine Klammern
+		\item Beispiele: Initialisieren mit $()$ \\
+		Kopierkonstruktor mit $()$
+		\item Nachteil: Initialisierung mit Array-Literal wurde nicht unterstützt \\ $C++11$ schließt diese Lücke mittels $\{ \}$
+		\item Problem: neue Syntax $\{ \}$ muss rückwärtskompatibel mit $()$ sein \\ dazu gibt es Regeln:
+		\begin{enumerate}
+			\item gibt es einen Konstruktor mit $k$ Argumenten \underline{und} einen Array-Konstruktor, dann rufen $()$ den Argument-Konstruktor auf und $\{ \}$ den Array-Konstruktor
+			\item gibt es keinen Array-Konstruktor (kein Argument), sind $()$ und $\{ \}$ äquivalent
+			\item weitere Regeln: googlen nach ``universal construction $C++$''
+		\end{enumerate}
+
+	\end{itemize}
+
+\section*{Fehlermeldungen mittels Exceptions}
+	\begin{itemize}
+		\item normalerweise werden Funktionen mit $return$ beendet
+		\item tritt in der Funktion ein Fehler auf, kann man den Rückgabetyp nicht ausrechnen \\ $\Rightarrow$ müssen die Funktion anders verlassen
+		\item Exceptions verlassen Funktionen mittels $throw$
+		\begin{itemize}
+			\item Argument von $throw$(Rückgabewert) ist ein Exception-Objekt, das den Fehler beschreibt (z.B. Fehlermeldung)
+			\item vereinfachhende Exception-Klasse im Header$<stdexcept>$, kann auch eigene definieren \\ z.B. $std::runtime \_ error$
+			\begin{lstlisting}
+				class Point {
+					...  // wie bisher
+					double operator[] (int index) const {
+						if (index == 0) 
+							return x_;
+						if (index == 1)
+							return y_;
+						throw std::runtime_error(``Point::operator[]; index_out_of_range'');
+					}
+				}
+			\end{lstlisting}
+		\end{itemize}
+		\item in der aufrufenden Funktion: wirft ein Funktionsaufruf eine Exception, wird standardmäßig die aufrufende Funktion ebenfalls mit ``throw'' beendet, wobei das Exception-Objekt einfach weitergegeben wird
+		\begin{lstlisting}
+			void foo {
+				Point p(2,3);
+				p[2] = 5;  // Exception: index 2 verboten -> foo wird auch beendet
+			}
+
+			int main() {
+				foo();  // Exception -> main() wird auch beendet und damit das Programm 
+				/*	alte Compiler geben einfach ``abort'' aus, neue die Fehlermeldung der Exception
+				*/
+			}
+		\end{lstlisting}
+		\item um die Exception zu ``fangen'' und zu behandeln (z.B. Fehler reparieren und retry), braucht man eine try/catch-Umgebung
+		\begin{lstlisting}
+			try {  // öffnen der Umgebung
+				foo();  // Aufruf, der Exception werfen könnte
+			}  ...  // weiterer Code, wenn foo() geklappt hat
+			catch (std::runtime_error & e) {  // 2
+				std::cerr<< ``Exception aufgetreten'' << e.what() << ``\n'';
+			}
+		\end{lstlisting}
+		\item Prinzip tritt im try Block eine Exception auf, wird der Block verlassen  \\ $\Rightarrow$ die Anweisungen \underline{hinter} dem fehlerhaften Aufruf werden nicht mehr ausgeführt
+ 		\item folgt ein catch mit passendem Exception-Type, springt die Ausführung in diesen catch-Block \\ $\Rightarrow$ es kann beliebig viele catch-Blöcke für verschiedeme Exceptions geben
+ 		\item universal-catch-Block: $catch(std::exception \, \& \, e)$ \\
+ 		fängt alles auf (genauer alle von $std::exception$ abgeleiteten Exceptions)
+ 		\item Beispiel: warten auf korrekte Benutzereingabe \\
+ 		\begin{lstlisting}
+ 			void process_user_input {
+ 				double input = 0.0;
+ 				bool input_valid = false;
+ 				while (!input_valid) {
+ 					try {
+ 						input = get_user_input();
+ 						input_valid = true;
+ 					} catch(std::exception & e) {
+ 						std::cerr << ``falsche Eingabe: '' << e.what() << ``\n Versuche es nochmal! \n'';
+ 					}
+ 				}
+ 				...  // verarbeite Input
+ 			}
+ 		\end{lstlisting}
+	\end{itemize}
+
+\section*{Template-Klassen}
+	\begin{itemize}
+		\item wir hatten: Template-Funktionen
+		\begin{lstlisting}
+			template <typename T>
+			T sq (T x) {
+				return x*x;
+			}
+		\end{lstlisting}
+		\item wie funktioniert das bei beliebigen Datentypen (z.B. Image-Klasse)
+		\item Beispiel: Image-Klasse soll beliebige Pixeltypen unterstützen, bisher $uint16\_t$, danach $uint8\_t$, float, RGB-Typ
+		\item Vorgehen bei der Templatisierung:
+		\begin{enumerate}
+			\item implementiere Klasse und Tests \underline{ohne} Template \\ $\Rightarrow$ können nach und nach Templatisieren und jeden Schritt durch Test prüfen
+			\item neue Typnamen einführen mit ``typedef OldTypName NewTypeName;''
+			\begin{enumerate}
+				\item in der Testfunktion:
+				\begin{lstlisting}
+					void test_image_uint16_t() {
+						typedef Image Img;
+						Img Img(10,20);
+						assert(img.width()==10 && img.height()==20);
+						assert(img(0,0)==0.0);
+						img(0,0) = 255;
+						assert(img(0,0)==255);
+						....
+					}
+				\end{lstlisting}
+				\item in der Klasse für den Pixeltyp
+				\begin{lstlisting}
+					class Image {
+						public:
+							typedef uint16_t PixelType;
+						private:
+							int width_, height_;
+							std::vector<PoxelType> data_;
+						public:
+							...
+							PixelType operator() (int x, int y) const {
+								return data_[x + y*width_];
+							}
+					}
+				\end{lstlisting}
+				$\Rightarrow$ Tests müssen weiterhin funktionieren, weil nur neue Typnamen, gleiche Funktionalität
+			\end{enumerate}
+		\end{enumerate}
+	\end{itemize}
+
+
+
+
+
+
+
+
 
 \end{document}
