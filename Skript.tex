@@ -2950,8 +2950,9 @@ Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eing
 		\item Beispiel: Image-Klasse soll beliebige Pixeltypen unterstützen, bisher $uint16\_t$, danach $uint8\_t$, float, RGB-Typ
 		\item Vorgehen bei der Templatisierung:
 		\begin{enumerate}
+			\addtocounter{enumi}{-1}
 			\item implementiere Klasse und Tests \underline{ohne} Template \\ $\Rightarrow$ können nach und nach Templatisieren und jeden Schritt durch Test prüfen
-			\item neue Typnamen einführen mit ``typedef OldTypName NewTypeName;''
+			\item Templatisierung vorbereiten: neue Typnamen einführen mit ``typedef OldTypName NewTypeName;''
 			\begin{enumerate}
 				\item in der Testfunktion:
 				\begin{lstlisting}
@@ -2982,9 +2983,122 @@ Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eing
 				\end{lstlisting}
 				$\Rightarrow$ Tests müssen weiterhin funktionieren, weil nur neue Typnamen, gleiche Funktionalität
 			\end{enumerate}
+			\item Tests wieder ausführen (müssen genauso funktionieren, wie vorher) - es wurde nichts an der Funktionalität geändert
+			\item Klasse templatisieren: $typedef$ aus $a)$ durch $template$-Deklaration ersetzen
+			\begin{lstlisting}
+				template <typename PixelType>
+				class Point {
+						// typedef uint16_t PixelType;
+					int width_, height_;
+							std::vector<PoxelType> data_;
+						public:
+							...
+							PixelType operator() (int x, int y) const {
+								return data_[x + y*width_];
+							}
+				}  // PixelType als Typname bleibt
+			\end{lstlisting}
+			\item Tests anpassen:
+			\begin{enumerate}
+				\item 
+				\begin{lstlisting}
+					void test_image_uint16_t() {
+						typedef Image<uint16_t> Img;
+						....  // nur eine Zeile ändert die Funktionalität
+					}
+				\end{lstlisting}
+				\item freie Funktionen sind noch nicht templatisiert $\Rightarrow $ vorübergehend auskommentieren, ebenso die zugehörigen Tests
+				\item verbleibende Tests ausführen, müssen wieder funktionieren  \\
+				$\Rightarrow $ Image: alle Vorkommen des Typ-Platzhalters $PixelType$ durch den Typ $uint16\_t$ ersetzt (Template-Instanziierung)
+			\end{enumerate}
+			\item \underline{eine} freie Funktion auswählen, wieder einkommentieren (zusammen mit ihrem Test) und templatisieren (templatisierte Klassen müssen immer mit $<>$ angegeben werden)
+			\begin{lstlisting}
+				std::string to_string(Image const & img)
+					// ->
+				template <typename PixelType>
+				std::string to_string(Image<PixelType> const & img)
+
+			\end{lstlisting}
+			\item Test ausführen, müssen wieder funktionieren
+			\item zurück zu Schritt 5 bis alle freien Funktionen templatisiert sind
+			\item weitere Testfunktion für einen anderen PixelTyp schreiben
+			\begin{lstlisting}
+				void test_image_float() {
+						typedef Image<float> Img;
+						....  // Tests jetzt auch mit Dezimalzahlen
+					}
+			\end{lstlisting}  \mbox{} \\
+			$\Rightarrow $ erst wenn beide Testfunktionen laufen, kann man relativ sicher sein, dass Templatisierung erfolgreich
 		\end{enumerate}
 	\end{itemize}
 
+\section*{Adressen und Zeiger}
+	\underline{bisher}: Speicherzellen werden über Variablennamen angesprochen (oder mehrere Namen für gleiche Süeicherzelle, falls Referenzen)
+	\begin{itemize}
+		\item Adressen sind Alternative, um Speicherzelle zu identifizieren
+		\item betrachte den gesamten Speicher des Compilers als \underline{ein} riesiges Array vom Typ ``byte''  \\
+		\begin{tikzpicture}
+            \foreach \x in {1,...,12}
+            	\draw[shift={(\x/2-0.25,0)},color=black] (0pt,0pt) -- (0pt,-3pt) node[below] {$\x$};
+            \foreach \x in {3,...,10}
+            	\draw[color=red] (\x/2,0) rectangle (\x/2+0.5,0.5);
+            \foreach \x in {0,1,2,10,11}
+            	\draw (\x/2,0) rectangle (\x/2+0.5,0.5);
+		\end{tikzpicture}
+		\item der globale Index des Bytes heißt Adresse (hier 3)
+		\item die Adresse des ersten Bytes einer Speicherzelle heißt Adresse einer Speicherzelle \\
+		$\Rightarrow $ kennt man die Adresse einer Speicherzelle und ihren Typ, kann man den Speicher genauso identifizieren wie mit Variablennamen
+		\item Konvention: die Adresse 0 wird nicht verwendet
+		\item die Adresse einer Speicherzelle kann von einer Variablen mit dem \underline{Adressoperator} erfragt werden (unäre \&-Operator)
+		\begin{lstlisting}
+			int i = 3;
+			std::cout << ``Adresse von i: '' << &i << ``\n'';
+		\end{lstlisting}
+		\item Adressen werden standardmäßig im Hexadezimalsystem angezeigt
+		\item ``Zeiger'' sind spezielle Variablen, mit denen man Adressen speichern kann
+		\begin{lstlisting}
+			int i = 3;
+			int * ptr_1 = &i;  // Initialisierung
+			int * ptr_2 = ptr_i;
+			int * ptr_3 = 0;  // ungültige Adresse
+		\end{lstlisting}
+		\item um vom Zeiger zur Variablen zurückzukommen, benutzt man den \underline{Dereferenzierungsoperator} $*ptr$  \\
+		Ergebnis: Referenz auf die Speicherzelle, die bei der Adresse beginnt
+		\begin{lstlisting}
+			int i = 3;
+			int * ptr_1 = &i;
+			int &j = * ptr_i;
+			j = 5;  77 i ändert sich auch
+			*prt_1 = 7;  // i und j ändern sich - schreibender Zugriff
+
+			// aber: 
+			int k = *ptr_1;  // eine neue Variable mit dem selben Wert
+		\end{lstlisting}
+		\item Adressoperator und Dereferenzierungsoperator sind Inverse ($i==*(\&i)$)
+		\item Nullte Argument von Member-Funktionen ist eigentlich ein \underline{Zeiger} auf die Adresse des aktuellen Objekts ($this$: Zeiger)
+	\end{itemize}
+
+\subsection*{Wozu braucht man Zeiger?}
+	\begin{itemize}
+		\item heute versucht man Zeiger so gut wie möglich in Objekten zu kapseln \\
+		$\Rightarrow $ einfacher, weniger Fehler
+		\item in $C$ gibt es noch keine Referenzen $\Rightarrow$ benutze Zeiger, um Referenzen zu simulieren
+		\begin{lstlisting}
+			// C++
+			void foo (int &i) {
+				i = 5;
+			}
+			int j = 3;
+			foo(j);  // j=5
+
+			// C
+			void foo (int *i) {
+				*i = 5;
+			}
+			int j = 3;
+			foo(&j);
+		\end{lstlisting}
+	\end{itemize}
 
 
 
