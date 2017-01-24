@@ -1009,7 +1009,7 @@
 	 	\item wir wollen das selbe Verhalten für \underline{beliebige} Elementtypen: $std::vector$
 	 \end{itemize}
 	 	
-	 	\paragraph{Datentyp: $std::vector$}
+	 	\subsection{Datentyp: $std::vector$}
 	 	
 	 	\begin{itemize}
 	 	\begin{lstlisting} [tabsize = 2]
@@ -3100,8 +3100,117 @@ Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eing
 		\end{lstlisting}
 	\end{itemize}
 
+\subsection{Anwendung der Zeiger}
+	\begin{enumerate}
+		\item Ersatz für Referenzen (besonders in C)
+		\item für Variablen, die auch ungültig sein können
+		\begin{enumerate}
+			\item für optionale Argumente
+			\begin{lstlisting}
+				int foo (int *a) {
+					if (a==0)  // ungültige Adresse - Benutzer hat kein Argument übergeben	
+					{
+						...
+					} else {
+						...
+					}
+				}
 
+				schneller:
+				int foo(int *a =0) { // 0 ist default argument, wenn nichts angegeben
+					if (a==0)  // ungültige Adresse - Benutzer hat kein Argument übergeben	
+					{
+						...
+					} else {
+						...
+					}
+					... 
+				}
+			\end{lstlisting}
+			\item wenn eine Funktion fehlschlägt (typisch für C) \\
+			z.B. Öffnen eines Files
+		\end{enumerate}
+		\item Variablen, die nacheinander auf verschiedene Speicherzellen zeigen (z.B. Iteratoren in C)
+		\item manuelle Speicherverwaltung:
+		\begin{itemize}
+			\item Speicherzellen, die mit Schlüsselwort ``new'' angelegt wurden, gibt der Compiler am Ende der Umgebung \underline{nicht} automatisch frei
+			\item wenn nicht mehr benötigt, muss der Programmierer den Speicher mit ``delete'' manuell freigeben
+			\item das Resultat von ``new'' ist Adresse der Speicherzelle
+		\end{itemize}
+		\item heterogene Container: normale Container ($std::vector<double>$) sind \underline{homogen}, d.h. alle Elemente haben gleichen Typ \\
+		manchmal braucht man Container, die Objekte verschiedener Typen aufnehmen \\
+		dafür braucht man Zeiger und Vererbung
+	\end{enumerate}
 
+\section*{Vererbung}
+	war am Anfang der objekt-orientierten Programmierung Lösung für alles
+	\begin{itemize}
+		\item heute: Hype vorbei, eine Technik unter vielen, sparsam eingesetzt, besonders bei GUI und bei Zeichenprogrammen
+		\item eine (abgeleitete/ Unter-) Klasse kann Funkionalität einer anderen Klasse (Basisklasse) erben, Basisklasse muss dafür nicht sterben
+		\item sprachunabhängige Schreibweise: UML-Diagramme (universal modelling language) \\
+		\begin{tikzpicture}
+			\draw (4,0) rectangle (6,1) node[midway] {Derive};
+			\draw (0,0) rectangle (2,1) node[midway] {Base};
+			\draw[thick,->] (2.5,0.5) -- (3.5,0.5);
+
+		\end{tikzpicture}
+		\begin{lstlisting}
+			class Base {..};
+
+			class Derived
+			: public Base  // Vererbung
+			{..};
+		\end{lstlisting}
+		\item die Funktionalität aus der Umgebung Base ist in der Umgebung von Derived sichtbar (wie bei normalen geschachtelten Umgebungen) 
+		\item Ausnahmen: 
+		\begin{itemize}
+			\item Konstruktoren und Zuweisungsoperatoren werden \underline{nicht} mit vererbt
+			\item private Member sind unsichtbar (aber noch vorhanden)
+		\end{itemize}
+		\item die in Derived geerbte Funktionalität gehört zur öffentlichen Schnittstelle von Derived $\Rightarrow $ Wiederverwendung der Funktionalität von Base \\
+		Ausnahme: wenn Derived eine neue Member-Variable oder -funktion mit den globalen Namen implementiert, wird die geerbte Variable \underline{verdeckt} (wie bei normaler Umgebung)
+		\item um Konstruktor von Derived wird der Konstruktor von Base aufgerufen wie ein Konstruktor der Membervariablen
+		\begin{lstlisting}
+		class Base {
+				int b_;
+			public:
+				Base(int b)
+				:b_(b) {}
+		};
+
+		class Derived
+		: public Base {
+				int d_;
+			public:
+				Derived (int b, int d)
+				: Base(b)
+				, d_(d) {}
+		};
+		\end{lstlisting}
+	\end{itemize}
+\subsection*{Anwendungen von Vererbung}
+	\begin{enumerate}
+		\item Spezialisierung
+		\item Implementationsvererbung
+		\item Schnittstellenvererbung
+	\end{enumerate}
+	\paragraph*{Spezialisierung}
+		beschreibt eine ``is -a'' Beziehung (Derived is a Base) \\
+		Basisklasse: untergeordneter Container von Point-Objekten (``Punktwolke'')
+		\begin{lstlisting}
+			class Point-Set {
+				...  // Funktionen wie Anzahl, Punkte verschieben etc.
+
+			};
+
+			class Polygon
+				:public Point-Set
+			{
+				...  // erbt Funktionalität von Point-Set
+					 // Funktionalität Flächeninhalt, Umfang, Test (Punkt innen/außen)
+					 // veränderte Funktionalität: zeichnen
+			};
+		\end{lstlisting}
 
 
 
