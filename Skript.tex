@@ -3142,6 +3142,33 @@ Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eing
 		dafür braucht man Zeiger und Vererbung
 	\end{enumerate}
 
+	\subsection*{heterogene Container}
+		Heterogene Container sind Container mit Elementen verschiedener Typen, in $C++$ nicht möglich \\ Trick: verwende Zeiger auf Interface-Klasse als Elementtyp \\$\Rightarrow $ dynamischer Typ aller Elemente kann unterschiedlich sein \\
+		$\Rightarrow $ Container ist heterogen bezüglich von Aufrufen virtueller Funktionen
+		\begin{lstlisting}
+			std::vector<Shape*> drawing;
+			drawing.push_back(new Line(start1, end1));  // new ist manuelle Speicherverwaltung
+			drawing.push_back(new Circle(center, radius));
+			drawing.push_back(new Line(start2, end2));
+			...
+			Image img(width, height) {
+				for (int i = 0, i< drawing.size(); i++) {
+					(*drawing[i]).draw(img);;  // nur Referenz auf i-te Komponente
+
+				}
+			}
+		\end{lstlisting}
+		\begin{itemize}
+			\item das Composite $shape$ enthält ein solches heterogenes Array als Membervariable, seine $draw()$-Funktion kapselt die Schleife
+			\item heterogene Container verändern manuelle Speicherverwaltung $\Rightarrow $ man darf am Ende nicht das ``delete'' für die Elemente vergessen \\
+			$\Rightarrow $ besser: verwende smart-pointer: $std::vector<std::shared_ptr<shape\gg drawing;$
+		\end{itemize}
+
+		\paragraph*{Kritik an Vererbung}
+		\begin{itemize}
+			\item die Vererbungshierarchie ist fest verdrahtet, \underline{aber} in verschiedenen Kontexten braucht man eigentlich verschiedene Hierarchien \\
+			z.B. Person-Objektkann je nach Situation verschiedene Rollen einnehmen (verchiedene Interface-Definitionen)
+
 \section*{Vererbung}
 	war am Anfang der objekt-orientierten Programmierung Lösung für alles
 	\begin{itemize}
@@ -3211,7 +3238,121 @@ Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eing
 					 // veränderte Funktionalität: zeichnen
 			};
 		\end{lstlisting}
+	\paragraph*{Implementationsvererbung}
+		wiederverwenden von Funktionalität (sehr umstritten - nur in wenigen Fällen die richtige Lösung) \\
+		\begin{itemize}
+			\item wichtig im Zusammenhang mit Spezialisierung z.B. Polygon
+			\item meist bevorzugt man heute Komposition und Delegation
+		\end{itemize}
+		\begin{lstlisting}
+			class Polynomial {
+				std::vector<double> a_;
+				/* alle Operationen, die Koeffizienten betreffen,, werden dem Array a_ weitergeleitet */
 
+				double & operator[] (int i) {
+					return a_[i];  // Delegation
+				}
+			};
+
+			class Polynomial {  // Vererbung
+				:public std::vector <double>
+					std::vector<double> a_;
+				
+				 // operator[] muss nicht erneut implementiert werden
+			};
+		\end{lstlisting}
+		Probleme:
+		\begin{itemize}
+			\item man erbt auch Funktionen, die man \underline{nicht} möchte, z.B. erase()
+			\item dadurch ist auch der Designer von std::vector in seiner Freiheit beschränkt (er muss auf die Unterklasse Rücksicht nehmen)
+			\item völlig verrückt wäre
+			\begin{lstlisting}
+				class Point2D {
+					protected
+						double x_,y_;
+					public:
+						...
+				};
+
+				class Point3D
+				:public Point2D {
+						double z_;
+					public:
+						...
+				};
+			\end{lstlisting}
+		\end{itemize}
+
+	\paragraph*{Schnittstellenvererbung}
+		\begin{itemize}
+			\item Basisklasse definiert die öffentliche Schnittstelle, aber implementiert sie nicht
+			\item abgeleitete Klassen implementieren die Schnittstelle auf verschiedene Art \\ Beispiel: Zeichenobjekte \\ \\
+			\begin{tikzpicture}
+				\draw (5,3) rectangle (7, 4) node[midway] {Shape};
+				\draw (0,1) rectangle (2,2) node[midway] {Line};
+				\draw (2.5,1) rectangle (4.5,2) node[midway] {Circle};
+				\draw (5,1) rectangle (7,2) node[midway] {Rectangle};
+				\draw (7.5,1) rectangle (9.5,2) node[midway] {Polygon};
+				\draw (10,1) rectangle (12,2) node[midway] {Composite};
+				\draw[thick,->] (6,3) -- (1,2);
+				\draw[thick,->] (6,3) -- (3.5,2);
+				\draw[thick,->] (6,3) -- (6,2);
+				\draw[thick,->] (6,3) -- (8.5,2);
+				\draw[thick,->] (6,3) -- (11,2);
+
+
+			\end{tikzpicture}
+			\item Interface-Vererbung ist möglich, weil Zeiger/Referenzen auf abgeleitete Klassen in Zeiger/Referenzen der Basisklasse konvertiert werden können
+			\begin{lstlisting}
+				Line line(...);
+				Shape * shape = &line;
+			\end{lstlisting}
+			$\Rightarrow $ bei dieser Konvertierung geht die Typinformation von $line$ nicht vollständig verloren,, d.h. der Compiler merkt sich, dass die in $Shape$ gespeicherte Adresse zu einer Line-Speicherzelle gehört \\
+			$\Rightarrow $ $Shape$ hat gleichzeitig zwei Typen:
+			\begin{itemize}
+				\item statischer Typ $Shape *$: der Typ der Deklaration
+				\item dynamischer Typ $Line$: der ursprüngliche Typ der Speicherzelle
+			\end{itemize}
+			das funktioniert, wenn die Interface-Klasse Shape mindestens eine ``virtuelle'' Member Funktion hat $\Rightarrow $ dann fügt der Compiler automatisch die notwendige zusätzliche Typinformation in die Speicherzelle ein
+			\begin{lstlisting}
+				class Shape {
+					public:
+						virtual void draw (Image & img) const {}
+
+						virtual void drawZoomed (Image & img, double zoom) const {}
+						virtual ~Shape() {}  // virtueller Destruktor
+				}
+			\end{lstlisting}
+			statt leerer Implementationen kann man auch ``abstrakte Funktionen'' definieren, ganz ohne Implementation $\Rightarrow $ dann ist auch die ganze Klasse abstrakt (Fehlermeldung bei Konstruktoraufruf) - Zeiger sind erlaubt  \\
+			es passiert also nicht aus Versehen ein neues Objekt zu erzeugen \\ \\jede abgeleitete Klasse muss die virtuellen Funktionen implementieren
+			\begin{lstlisting}
+				class Line
+				:public Shape {
+						Point start_, end_;
+						uint16_t color_;
+					public:
+						Line(Point s, Point e, uint16_t color)
+						:start_(s), end_(e), color_(color) {}
+
+						virtual void draw (Image & img) const {
+							...  // nutze Bresenham-Algorithmus
+						}
+						virtual void drawZomed (Image & img, double zoom) const {
+							...  // zeichne Linie für zoom*start_ bis zoom*end_
+						}
+						virtual ~line() {}
+				}
+			\end{lstlisting}
+			\item Bedeutung der zwei-Typen-Regel beim Aufruf von $*Shape.foo()$
+			\begin{itemize}
+				\item normale Member-Funktionen (nicht virtuell) werden mit dem statischen Typ aufgerufen
+				\begin{itemize}
+					\item verwende Implementation der abgeleiteten Klasse
+					\item Nulltes Argument ist Zeiger auf abgeleitete Klasse \\
+					``Polymorphie'' - der gleiche Aufruf, kann ganz verschiedene Effekte haben, je nach dem \underline{dynamischen Typen} der Speicherzelle, auf die Klasse zeigt
+				\end{itemize}
+			\end{itemize}
+		\end{itemize}
 
 
 
