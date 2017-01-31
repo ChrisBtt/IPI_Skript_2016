@@ -2454,7 +2454,7 @@ Lösung in $C++$
 	\begin{itemize}
 		\item Konstruktor: bringt Objekt in wohldefinierten Anfangszustand
 		\item Destruktor: entsorgt nicht mehr benötigtes Objekt (typischerweise am Ende der Umgebung)
-		\item Zuweisungsoperatoren: um Objekte per Zuweisung (``='') zu übers
+		\item Zuweisungsoperatoren: um Objekte per Zuweisung (``='') zu überschreiben
 	\end{itemize}
 
 \paragraph{Destruktor}
@@ -3178,7 +3178,7 @@ Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eing
 		\begin{tikzpicture}
 			\draw (4,0) rectangle (6,1) node[midway] {Derive};
 			\draw (0,0) rectangle (2,1) node[midway] {Base};
-			\draw[thick,->] (2.5,0.5) -- (3.5,0.5);
+			\draw[thick,<-] (2.5,0.5) -- (3.5,0.5);
 
 		\end{tikzpicture}
 		\begin{lstlisting}
@@ -3294,11 +3294,12 @@ Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eing
 				\draw (5,1) rectangle (7,2) node[midway] {Rectangle};
 				\draw (7.5,1) rectangle (9.5,2) node[midway] {Polygon};
 				\draw (10,1) rectangle (12,2) node[midway] {Composite};
-				\draw[thick,->] (6,3) -- (1,2);
-				\draw[thick,->] (6,3) -- (3.5,2);
-				\draw[thick,->] (6,3) -- (6,2);
-				\draw[thick,->] (6,3) -- (8.5,2);
-				\draw[thick,->] (6,3) -- (11,2);
+
+				\foreach \x in {1,3.5,6,8.5,11}
+					\draw (\x,2) -- (\x,2.5);
+
+				\draw (1,2.5) -- (11,2.5);
+				\draw[thick, ->] (6,2.5) -- (6,3);
 
 
 			\end{tikzpicture}
@@ -3353,7 +3354,7 @@ Arbeiten mit Nutzer-definierten Datenstrukturen möglichst einfach, wie mit eing
 				\end{itemize}
 			\end{itemize}
 		\end{itemize}
-
+	\end{itemize}
 
 
 
